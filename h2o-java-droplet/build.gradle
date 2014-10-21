@@ -1,0 +1,60 @@
+/*
+ * This is a simple build file for building H2O applications.
+ * 
+ * For more details please follow README.md
+ */
+
+// Apply the java plugin to add support for Java
+apply plugin: 'java'
+// Support idea and Eclipse IDEs
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    // Use 'maven central' for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    mavenCentral()
+    // Enable 'maven local' for resolving your locally cached dependencies
+    // Useful for cross development for example with h2o-dev
+    //mavenLocal()
+}
+
+ext {
+  // Latest stable version
+  h2oVersion = '0.1.8'
+  // Latest development snapshot
+  // h2oVersion = '0.1.9-SNAPSHOT'
+}
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+    // Define dependency on core of H2O
+    compile "ai.h2o:h2o-core:${h2oVersion}"
+    // Define dependency on H2O algorithm 
+    compile "ai.h2o:h2o-algos:${h2oVersion}"
+    // Demands web support 
+    compile "ai.h2o:h2o-web:${h2oVersion}"
+
+    // H2O uses jUnit for testing 
+    testCompile 'junit:junit:4.11'
+}
+
+//
+// Project specific settings
+//
+
+// Setup group ID for this project
+group = "ai.h2o"
+
+//
+// Setup Java plugin
+//
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+compileJava { 
+  options.debug = true 
+}
+
+
+

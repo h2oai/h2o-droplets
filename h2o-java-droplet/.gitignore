@@ -1,0 +1,26 @@
+// Ignore gradle cache
+.gradle/
+
+// Ignore Eclipse local settings
+.settings/
+
+// Ignore Idea settings
+.idea/
+*.iml
+*.ipr
+*.iws
+
+// Ignore class file
+*.class
+
+// Ignore private and temps by default
+private/
+tmp/
+
+// Ignore vim swap 
+*.swp
+
+// Ignore build dirs
+out/
+build/
+

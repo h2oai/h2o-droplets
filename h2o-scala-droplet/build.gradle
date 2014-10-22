@@ -1,0 +1,109 @@
+/*
+ * This is a simple build file for building H2O Scala-based applications.
+ * 
+ * For more details please follow README.md.
+ */
+
+// Apply the java plugin to add support for Java
+apply plugin: 'scala'
+// Support idea and Eclipse IDEs
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+// 
+// Setup build script
+//
+buildscript {
+  repositories {
+    mavenCentral()
+    jcenter()
+  }
+  dependencies {
+    classpath 'org.github.mansur.scalastyle:gradle-scalastyle-plugin_2.10:0.4.1'
+  }
+}
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    // Use 'maven central' for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    mavenCentral()
+    // Enable 'maven local' for resolving your locally cached dependencies
+    // Useful for cross development for example with h2o-dev
+    //mavenLocal()
+}
+
+ext {
+  // Latest stable version
+  h2oVersion = '0.1.8'
+  // Latest development snapshot
+  // h2oVersion = '0.1.9-SNAPSHOT'
+
+  // Scala binary version
+  scalaBinaryVersion = '2.10'
+  scalaVersion = '2.10.4'
+}
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+    // Scala project needs dependency on Scala library
+    compile "org.scala-lang:scala-library:$scalaVersion"
+    // Define dependency on core of H2O
+    compile "ai.h2o:h2o-core:${h2oVersion}"
+    // Define dependency on H2O algorithm 
+    compile "ai.h2o:h2o-algos:${h2oVersion}"
+    // Demands web support 
+    compile "ai.h2o:h2o-web:${h2oVersion}"
+    // Demands Scala API
+    compile "ai.h2o:h2o-scala_${scalaBinaryVersion}:${h2oVersion}"
+
+    // H2O uses jUnit for testing 
+    testCompile 'junit:junit:4.11'
+    // And use scalatest for Scala testing
+    testCompile "org.scalatest:scalatest_${scalaBinaryVersion}:2.2.1"
+}
+
+//
+// Project specific settings
+//
+
+// Setup group ID for this project
+group = "ai.h2o"
+
+//
+// Setup Scala plugin
+//
+
+// Activate Zinc compiler and configure scalac
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.useCompileDaemon = false
+    scalaCompileOptions.useAnt = false
+    scalaCompileOptions.additionalParameters = ['-target:jvm-1.6']
+}
+
+// In resulting jar include Scala binary version
+jar {
+  baseName = "${project.name}_${scalaBinaryVersion}"
+}
+
+// Check Scala coding conventions
+apply from: 'gradle/scalastyle.gradle'
+
+// Define a new task to run Scala tests
+task scalatest(dependsOn: compileTestScala) << {
+  ant.taskdef(
+    name:      'scalatest',
+    classname: 'org.scalatest.tools.ScalaTestAntTask',
+    classpath: configurations.testRuntime.asPath+':'+compileScala.destinationDir
+  )
+  ant.scalatest(
+    runpath: sourceSets.test.output.classesDir,
+    haltonfailure: 'true',
+    fork: 'false'
+  ) {
+    reporter(type: 'stderr')
+  }
+}
+
+test.dependsOn scalatest
+

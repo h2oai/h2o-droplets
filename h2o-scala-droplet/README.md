@@ -1,0 +1,69 @@
+# H2O Example Project
+
+This is a simple example project to start with H<sub>2</sub>O.
+
+## Project structure
+ 
+```
+├─ gradle/        - Gradle definition files
+├─ src/           - Source code
+│  ├─ main/       - Main implementation code 
+│  │  ├─ java/
+│  │  ├─ scala/
+│  ├─ test/       - Test code
+│  │  ├─ scala/
+├─ build.gradle   - Build file for this project
+├─ gradlew        - Gradle wrapper 
+```
+
+## Project building
+
+For building, please, use encapsulated `gradlew` command:
+```
+./gradlew build
+```
+
+## Starting with Idea
+
+There are two ways to open this project in Idea
+
+  * Using Gradle build file directly
+    1. Open project's `build.gradle` in Idea via _File > Open_ 
+    
+or
+  
+  Using Gradle generated project files
+    1. Generate Idea configuration files via
+      ```
+      ./gradlew idea
+      ```
+    2. and open project in Idea via _File > Open_
+    
+> Note: To clean up Idea project files please launch `./gradlew cleanIdea`
+
+## Starting with Eclipse
+  1. Generate Eclipse project files via `./gradlew eclipse`
+  2. Open project in Eclipse via _File > Import > Existing Projects into Workspace_
+
+
+> Note: To clean up Idea project files please launch `./gradlew cleanIdea`
+
+## Running tests
+
+To run tests, please, run:
+```
+./gradlew test
+```
+
+# Checking code style
+
+To check codestyle:
+```
+./gradlew scalaStyle
+```
+
+
+
+
+
+

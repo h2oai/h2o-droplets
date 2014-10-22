@@ -31,7 +31,7 @@ There are two ways to open this project in Idea
     
 or
   
-  Using Gradle generated project files
+  * Using Gradle generated project files
     1. Generate Idea configuration files via
       ```
       ./gradlew idea

@@ -35,7 +35,7 @@ dependencies {
     compile "ai.h2o:h2o-algos:${h2oVersion}"
     // Demands web support 
     compile "ai.h2o:h2o-web:${h2oVersion}"
-    
+    // Contains H2O entry points
     compile "ai.h2o:h2o-app:${h2oVersion}"
 
     // H2O uses jUnit for testing 

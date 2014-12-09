@@ -15,6 +15,17 @@ repositories {
     // Use 'maven central' for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
     mavenCentral()
+
+    // Cloudera dependencies
+    maven {
+      url "https://repository.cloudera.com/artifactory/cloudera-repos/"
+    }
+
+    // Hortonworks dependencies
+    maven {
+      url "http://repo.hortonworks.com/content/repositories/releases/"
+    }
+
     // Enable 'maven local' for resolving your locally cached dependencies
     // Useful for cross development for example with h2o-dev
     //mavenLocal()
@@ -58,5 +69,10 @@ compileJava {
   options.debug = true 
 }
 
-
+//
+// Setup Gradle wrapper task to obtain latest gradle version
+//
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.2.1'
+}
 

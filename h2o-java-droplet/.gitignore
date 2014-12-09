@@ -1,9 +1,6 @@
 // Ignore gradle cache
 .gradle/
 
-// Ignore Eclipse local settings
-.settings/
-
 // Ignore Idea settings
 .idea/
 *.iml
@@ -23,4 +20,9 @@ tmp/
 // Ignore build dirs
 out/
 build/
+
+// Ignore Eclipse project files
+.classpath
+.project
+.settings/
 

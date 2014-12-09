@@ -35,9 +35,9 @@ repositories {
 
 ext {
   // Latest stable version
-  h2oVersion = '0.1.8'
+  h2oVersion = '0.1.13'
   // Latest development snapshot
-  // h2oVersion = '0.1.9-SNAPSHOT'
+  h2oDevelVersion = '0.1.14-SNAPSHOT'
 
   // Scala binary version
   scalaBinaryVersion = '2.10'

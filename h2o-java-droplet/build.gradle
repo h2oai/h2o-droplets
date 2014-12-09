@@ -22,9 +22,9 @@ repositories {
 
 ext {
   // Latest stable version
-  h2oVersion = '0.1.8'
+  h2oVersion = '0.1.13'
   // Latest development snapshot
-  // h2oVersion = '0.1.9-SNAPSHOT'
+  h2oDevelVersion = '0.1.14-SNAPSHOT'
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -35,6 +35,8 @@ dependencies {
     compile "ai.h2o:h2o-algos:${h2oVersion}"
     // Demands web support 
     compile "ai.h2o:h2o-web:${h2oVersion}"
+    
+    compile "ai.h2o:h2o-app:${h2oVersion}"
 
     // H2O uses jUnit for testing 
     testCompile 'junit:junit:4.11'

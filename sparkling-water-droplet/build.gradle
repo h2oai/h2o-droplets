@@ -1,0 +1,155 @@
+/*
+ * This is a simple build file for building Sparkling Water applications.
+ * 
+ * For more details please follow README.md.
+ */
+
+// Apply the java plugin to add support for Java
+apply plugin: 'scala'
+// Support idea and Eclipse IDEs
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+//
+// The build script settings to fetch plugins and put them on
+// classpath
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.0'
+        classpath 'org.github.mansur.scalastyle:gradle-scalastyle-plugin_2.10:0.4.1'
+    }
+}
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    // Use 'maven central' for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    mavenCentral()
+
+    // Cloudera dependencies
+    maven {
+        url "https://repository.cloudera.com/artifactory/cloudera-repos/"
+    }
+
+    // Hortonworks dependencies
+    maven {
+        url "http://repo.hortonworks.com/content/repositories/releases/"
+    }
+
+    // Enable 'maven local' for resolving your locally cached dependencies
+    // Useful for cross development for example with h2o-dev
+    //mavenLocal()
+}
+
+ext {
+    // Latest stable version
+    spWaterVersion = '0.2.1'
+    // Latest development snapshot
+    spWaterDevelVersion = '0.2.2-SNAPSHOT'
+
+    // Scala binary version
+    scalaBinaryVersion = '2.10'
+    scalaVersion = '2.10.4'
+}
+
+// This section declares the dependencies for your production and test code
+dependencies {
+    // Sparkling Water Core
+    compile("ai.h2o:sparkling-water-core_${scalaBinaryVersion}:${spWaterVersion}") {
+        exclude group: "javax.servlet", module: "servlet-api"
+    }
+
+    // Scala project needs dependency on Scala library
+    compile "org.scala-lang:scala-library:$scalaVersion"
+
+    // And use scalatest for Scala testing
+    testCompile "org.scalatest:scalatest_${scalaBinaryVersion}:2.2.1"
+}
+
+//
+// Project specific settings
+//
+
+// Setup group ID for this project
+group = "ai.h2o"
+
+//
+// Setup Scala plugin
+//
+
+// Activate Zinc compiler and configure scalac
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.useCompileDaemon = false
+    scalaCompileOptions.useAnt = false
+    scalaCompileOptions.additionalParameters = ['-target:jvm-1.6']
+}
+
+// In resulting jar include Scala binary version
+jar {
+    baseName = "${project.name}_${scalaBinaryVersion}"
+}
+
+// Check Scala coding conventions
+apply from: 'gradle/scalastyle.gradle'
+
+// Define a new task to run Scala tests
+task scalatest(dependsOn: compileTestScala) << {
+    ant.taskdef(
+            name: 'scalatest',
+            classname: 'org.scalatest.tools.ScalaTestAntTask',
+            classpath: configurations.testRuntime.asPath + ':' + compileScala.destinationDir
+    )
+    ant.scalatest(
+            runpath: sourceSets.test.output.classesDir,
+            haltonfailure: 'true',
+            fork: 'false'
+    ) {
+        reporter(type: 'stderr')
+    }
+}
+
+test.dependsOn scalatest
+
+//
+// Setup Gradle wrapper task to obtain latest gradle version
+//
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.2.1'
+}
+
+//
+// Configure assembly to create Spark application
+//
+
+// Support for application assembly
+apply plugin: 'com.github.johnrengelman.shadow'
+
+shadowJar {
+    // Configure name of output jar as sparkling-water-droplet-app.jar
+    appendix = 'app'
+    archiveName = "${baseName}-${appendix}.${extension}"
+
+    // Dependencies included in resulting jar file
+    dependencies {
+        // This has to be specific list of dependencies
+        // Do not forget that Sparkling Water App is intended
+        // to run inside Spark environment providing some jars
+        // (like hadoop, aws) on classpath
+        include(dependency("ai.h2o:sparkling-water-core_${scalaBinaryVersion}"))
+        include(dependency("ai.h2o:h2o-core"))
+        include(dependency("ai.h2o:h2o-scala_${scalaBinaryVersion}"))
+        include(dependency("ai.h2o:h2o-app"))
+        include(dependency("ai.h2o:h2o-web"))
+        include(dependency("ai.h2o:h2o-algos"))
+        include(dependency("joda-time:joda-time"))
+        include(dependency("org.javassist:javassist"))
+        include(dependency("gov.nist.math:jama"))
+        include(dependency("com.google.code.gson:gson"))
+        include(dependency("org.reflections:reflections"))
+    }
+}

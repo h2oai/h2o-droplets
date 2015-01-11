@@ -46,7 +46,7 @@ or
   2. Open project in Eclipse via _File > Import > Existing Projects into Workspace_
 
 
-> Note: To clean up Idea project files please launch `./gradlew cleanIdea`
+> Note: To clean up Eclipse project files please launch `./gradlew cleanEclipse`
 
 ## Running tests
 

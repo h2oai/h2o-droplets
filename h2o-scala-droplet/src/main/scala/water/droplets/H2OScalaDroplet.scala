@@ -16,9 +16,7 @@
  */
 package water.droplets
 
-import water.DKV
-import water.Iced
-import water.Key
+import water.{DKV, Keyed, Key}
 
 /**
  * H2O Scala bootstrap example.
@@ -30,14 +28,16 @@ object H2OJavaDroplet {
 
   val MSG = "Hello %s!";
 
-  case class StringHolder(val msg: String) extends Iced {
+  case class StringHolder(val msg: String) extends Keyed[StringHolder] {
     def hello(name:String) : String =
       String.format(msg, name)
+
+    override def checksum_impl(): Long = msg.hashCode
   }
 
-  def hello():Key = {
-    val vkey  = Key.make("hello.key")
-    val value = StringHolder(MSG)
+  def hello():Key[StringHolder] = {
+    val vkey  = Key.make("hello.key").asInstanceOf[Key[StringHolder]]
+    val value:StringHolder = StringHolder(MSG)
     DKV.put(vkey, value)
 
     vkey

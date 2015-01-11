@@ -33,11 +33,9 @@ repositories {
 
 ext {
   // Latest stable version
-  h2oVersion = '0.1.13'
+  h2oVersion = '0.1.17'
   // Latest development snapshot
-  h2oDevelVersion = '0.1.14-SNAPSHOT'
-  // H2O Flow kind of UI
-  h2oFlowVersion = '0.2.8' 
+  h2oDevelVersion = '0.1.18-SNAPSHOT'
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -50,8 +48,6 @@ dependencies {
     compile "ai.h2o:h2o-web:${h2oVersion}"
     // Contains H2O entry points
     compile "ai.h2o:h2o-app:${h2oVersion}"
-    // Contains H2O Flow web UI
-    runtime "ai.h2o:h2o-flow:${h2oFlowVersion}"
 
     // H2O uses jUnit for testing 
     testCompile 'junit:junit:4.11'

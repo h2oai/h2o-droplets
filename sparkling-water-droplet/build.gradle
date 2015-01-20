@@ -48,9 +48,9 @@ repositories {
 
 ext {
     // Latest stable version
-    spWaterVersion = '0.2.1'
+    spWaterVersion = '0.2.2'
     // Latest development snapshot
-    spWaterDevelVersion = '0.2.2-SNAPSHOT'
+    spWaterDevelVersion = '0.2.3-SNAPSHOT'
 
     // Scala binary version
     scalaBinaryVersion = '2.10'

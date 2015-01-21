@@ -48,9 +48,9 @@ repositories {
 
 ext {
     // Latest stable version
-    spWaterVersion = '0.2.2'
+    spWaterVersion = '0.2.3'
     // Latest development snapshot
-    spWaterDevelVersion = '0.2.3-SNAPSHOT'
+    spWaterDevelVersion = '0.2.4-SNAPSHOT'
 
     // Scala binary version
     scalaBinaryVersion = '2.10'
@@ -63,6 +63,7 @@ dependencies {
     compile("ai.h2o:sparkling-water-core_${scalaBinaryVersion}:${spWaterVersion}") {
         exclude group: "javax.servlet", module: "servlet-api"
     }
+    compile("ai.h2o:sparkling-water-examples_${scalaBinaryVersion}:${spWaterVersion}")
 
     // Scala project needs dependency on Scala library
     compile "org.scala-lang:scala-library:$scalaVersion"

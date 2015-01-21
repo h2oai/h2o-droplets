@@ -59,8 +59,8 @@ object SparklingWaterDroplet {
     val predict = gbmModel.score(irisTable)('predict)
 
     // Compute number of mispredictions with help of Spark API
-    val trainRDD = toRDD[StringHolder](irisTable('class))
-    val predictRDD = toRDD[StringHolder](predict)
+    val trainRDD = asRDD[StringHolder](irisTable('class))
+    val predictRDD = asRDD[StringHolder](predict)
 
     // Make sure that both RDDs has the same number of elements
     assert(trainRDD.count() == predictRDD.count)

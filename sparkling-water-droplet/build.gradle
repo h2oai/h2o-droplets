@@ -142,6 +142,7 @@ shadowJar {
         // to run inside Spark environment providing some jars
         // (like hadoop, aws) on classpath
         include(dependency("ai.h2o:sparkling-water-core_${scalaBinaryVersion}"))
+        include(dependency("ai.h2o:sparkling-water-examples_${scalaBinaryVersion}"))
         include(dependency("ai.h2o:h2o-core"))
         include(dependency("ai.h2o:h2o-scala_${scalaBinaryVersion}"))
         include(dependency("ai.h2o:h2o-app"))

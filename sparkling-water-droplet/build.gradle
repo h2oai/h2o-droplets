@@ -41,6 +41,11 @@ repositories {
         url "http://repo.hortonworks.com/content/repositories/releases/"
     }
 
+    // Public sonatype repository
+    maven {
+        url "https://oss.sonatype.org/content/repositories/releases/"
+    }
+
     // Enable 'maven local' for resolving your locally cached dependencies
     // Useful for cross development for example with h2o-dev
     //mavenLocal()
@@ -48,9 +53,9 @@ repositories {
 
 ext {
     // Latest stable version
-    spWaterVersion = '0.2.5'
+    spWaterVersion = '0.2.7'
     // Latest development snapshot
-    spWaterDevelVersion = '0.2.6-SNAPSHOT'
+    spWaterDevelVersion = '0.2.8-SNAPSHOT'
 
     // Scala binary version
     scalaBinaryVersion = '2.10'

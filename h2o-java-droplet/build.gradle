@@ -10,6 +10,11 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
+// h2o-dev dependency information
+def h2oBranch = 'master'
+def h2oBuildNumber = '1041'
+def h2oProjectVersion = "0.1.27.${h2oBuildNumber}"
+
 // In this section you declare where to find the dependencies of your project
 repositories {
     // Use 'maven central' for resolving your dependencies.
@@ -26,28 +31,26 @@ repositories {
       url "http://repo.hortonworks.com/content/repositories/releases/"
     }
 
+    // h2o-dev dependencies
+    maven {
+      url "https://s3.amazonaws.com/h2o-release/h2o-dev/${h2oBranch}/${h2oBuildNumber}/maven/repo/"
+    }
+
     // Enable 'maven local' for resolving your locally cached dependencies
     // Useful for cross development for example with h2o-dev
     //mavenLocal()
 }
 
-ext {
-  // Latest stable version
-  h2oVersion = '0.1.17'
-  // Latest development snapshot
-  h2oDevelVersion = '0.1.18-SNAPSHOT'
-}
-
 // In this section you declare the dependencies for your production and test code
 dependencies {
     // Define dependency on core of H2O
-    compile "ai.h2o:h2o-core:${h2oVersion}"
+    compile "ai.h2o:h2o-core:${h2oProjectVersion}"
     // Define dependency on H2O algorithm 
-    compile "ai.h2o:h2o-algos:${h2oVersion}"
+    compile "ai.h2o:h2o-algos:${h2oProjectVersion}"
     // Demands web support 
-    compile "ai.h2o:h2o-web:${h2oVersion}"
+    compile "ai.h2o:h2o-web:${h2oProjectVersion}"
     // Contains H2O entry points
-    compile "ai.h2o:h2o-app:${h2oVersion}"
+    compile "ai.h2o:h2o-app:${h2oProjectVersion}"
 
     // H2O uses jUnit for testing 
     testCompile 'junit:junit:4.11'
@@ -66,13 +69,13 @@ group = "ai.h2o"
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 compileJava { 
-  options.debug = true 
+    options.debug = true 
 }
 
 //
 // Setup Gradle wrapper task to obtain latest gradle version
 //
 task wrapper(type: Wrapper) {
-  gradleVersion = '2.2.1'
+    gradleVersion = '2.2.1'
 }
 

@@ -10,10 +10,15 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
-// h2o-dev dependency information
-def h2oBranch = 'master'
-def h2oBuildNumber = '1041'
-def h2oProjectVersion = "0.1.27.${h2oBuildNumber}"
+//
+// Configure project properties
+//
+ext { 
+  // Configure h2o-dev dependency information
+  h2oBranch = 'master'
+  h2oBuildNumber = '1056'
+  h2oProjectVersion = "0.1.27.${h2oBuildNumber}"
+}
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -38,7 +43,7 @@ repositories {
 
     // Enable 'maven local' for resolving your locally cached dependencies
     // Useful for cross development for example with h2o-dev
-    //mavenLocal()
+    if (h2oBuildNumber == '99999') mavenLocal()
 }
 
 // In this section you declare the dependencies for your production and test code

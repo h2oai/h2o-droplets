@@ -10,6 +10,9 @@ apply plugin: 'scala'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
+// Support local launch of application 
+apply plugin: 'application'
+mainClassName = 'water.droplets.SparklingWaterDroplet'
 //
 // The build script settings to fetch plugins and put them on
 // classpath

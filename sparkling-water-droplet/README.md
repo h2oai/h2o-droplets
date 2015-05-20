@@ -2,6 +2,13 @@
 
 This is a simple example project to start coding with Sparkling Water.
 
+## Dependencies
+This droplet uses Sparkling Water 1.2.5 which integrates:
+  - Spark 1.2
+  - H2O 3.0 Shannon
+
+For more details see [build.gradle].
+
 ## Project structure
  
 ```
@@ -20,6 +27,12 @@ This is a simple example project to start coding with Sparkling Water.
 For building, please, use provided `gradlew` command:
 ```
 ./gradlew build
+```
+
+### Run demo
+For running a simple application:
+```
+./gradlew run
 ```
 
 ## Starting with Idea

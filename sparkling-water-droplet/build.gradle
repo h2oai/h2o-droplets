@@ -32,17 +32,14 @@ buildscript {
 // Configure project properties
 //
 ext {
-    // Latest stable version
-    spWaterVersion = '0.2.11'
-    // Latest development snapshot
-    spWaterDevelVersion = '0.2.12-SNAPSHOT'
+    // 
+    sparkVersion = '1.2'
+    // Latest stable version for Spark 1.2
+    spWaterVersion = "${sparkVersion}.5"
 
     // Scala binary version
     scalaBinaryVersion = '2.10'
     scalaVersion = '2.10.4'
-
-    // FIXME: we need to specify h2o build maven repo since it cannot be fetched transitively :-(
-    h2oBuild = '1074'
 }
 
 
@@ -67,13 +64,9 @@ repositories {
         url "https://oss.sonatype.org/content/repositories/releases/"
     }
 
-    maven {
-        url "http://h2o-release.s3.amazonaws.com/h2o-dev/master/$h2oBuild/maven/repo/"
-    }
-
     // Enable 'maven local' for resolving your locally cached dependencies
     // Useful for cross development for example with h2o-dev
-    if (spWaterDevelVersion.endsWith("SNAPSHOT")) mavenLocal()
+    if (spWaterVersion.endsWith("SNAPSHOT")) mavenLocal()
 }
 
 // This section declares the dependencies for your production and test code
@@ -167,6 +160,8 @@ shadowJar {
         include(dependency("ai.h2o:h2o-app"))
         include(dependency("ai.h2o:h2o-web"))
         include(dependency("ai.h2o:h2o-algos"))
+        include(dependency("ai.h2o:h2o-persist-hdfs"))
+        include(dependency("ai.h2o:h2o-genmodel"))
         include(dependency("joda-time:joda-time"))
         include(dependency("org.javassist:javassist"))
         include(dependency("gov.nist.math:jama"))
@@ -174,5 +169,6 @@ shadowJar {
         include(dependency("org.reflections:reflections"))
         include(dependency("com.google.guava:guava"))
         include(dependency("commons-collections:commons-collections"))
+        include(dependency("ai.h2o:google-analytics-java"))
     }
 }

@@ -23,7 +23,7 @@ import hex.tree.gbm.GBM
 import hex.tree.gbm.GBMModel.GBMParameters
 import org.apache.spark.h2o.{StringHolder, H2OContext}
 import org.apache.spark.{SparkFiles, SparkContext, SparkConf}
-import water.fvec.DataFrame
+import water.fvec.H2OFrame
 
 /**
  * Example of Sparkling Water based application.
@@ -44,7 +44,7 @@ object SparklingWaterDroplet {
     sc.addFile("data/iris.csv")
 
     // Load data and parse it via h2o parser
-    val irisTable = new DataFrame(new File(SparkFiles.get("iris.csv")))
+    val irisTable = new H2OFrame(new File(SparkFiles.get("iris.csv")))
 
     // Build GBM model
     val gbmParams = new GBMParameters()

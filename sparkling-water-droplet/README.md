@@ -7,7 +7,7 @@ This droplet uses Sparkling Water 1.2.5 which integrates:
   - Spark 1.2
   - H2O 3.0 Shannon
 
-For more details see [build.gradle].
+For more details see [build.gradle](build.gradle).
 
 ## Project structure
  

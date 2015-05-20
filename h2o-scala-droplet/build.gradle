@@ -28,9 +28,9 @@ buildscript {
 //
 ext { 
   // Configure h2o-dev dependency information
-  h2oBranch = 'master'
-  h2oBuildNumber = '1056'
-  h2oProjectVersion = "0.1.27.${h2oBuildNumber}"
+  h2oBranch = 'rel-shannon'
+  h2oBuildNumber = '8'
+  h2oProjectVersion = "3.0.0.${h2oBuildNumber}"
 
   // Scala binary version
   scalaBinaryVersion = '2.10'
@@ -54,9 +54,12 @@ repositories {
       url "http://repo.hortonworks.com/content/repositories/releases/"
     }
 
+    // Include build h2o-dev dependencies if branch if pulling from master
     // h2o-dev dependencies
-    maven {
-      url "https://s3.amazonaws.com/h2o-release/h2o-dev/${h2oBranch}/${h2oBuildNumber}/maven/repo/"
+    if (h2oBranch == 'master') {
+      maven {
+        url "https://s3.amazonaws.com/h2o-release/h2o-dev/${h2oBranch}/${h2oBuildNumber}/maven/repo/"
+      }
     }
 
     // Enable 'maven local' for resolving your locally cached dependencies

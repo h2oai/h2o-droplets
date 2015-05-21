@@ -58,7 +58,7 @@ repositories {
     // h2o-dev dependencies
     if (h2oBranch == 'master') {
       maven {
-        url "https://s3.amazonaws.com/h2o-release/h2o-dev/${h2oBranch}/${h2oBuildNumber}/maven/repo/"
+        url "https://s3.amazonaws.com/h2o-release/h2o/${h2oBranch}/${h2oBuildNumber}/maven/repo/"
       }
     }
 

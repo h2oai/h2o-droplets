@@ -41,7 +41,7 @@ object SparklingWaterDroplet {
     import h2oContext._
 
     // Register file to be available on all nodes
-    sc.addFile("data/iris.csv")
+    sc.addFile(new File("data/iris.csv").getAbsolutePath)
 
     // Load data and parse it via h2o parser
     val irisTable = new H2OFrame(new File(SparkFiles.get("iris.csv")))

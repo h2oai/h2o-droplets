@@ -29,7 +29,7 @@ buildscript {
 ext { 
   // Configure h2o-dev dependency information
   h2oBranch = 'rel-shannon'
-  h2oBuildNumber = '8'
+  h2oBuildNumber = '26'
   h2oProjectVersion = "3.0.0.${h2oBuildNumber}"
 
   // Scala binary version

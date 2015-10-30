@@ -1,0 +1,67 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'scala'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+apply plugin: 'application'
+mainClassName = 'examples.PojoExample'
+
+ext {
+  scalaBinaryVersion = "2.10"
+  scalaVersion = "2.10.4"
+  sparkVersion = "1.5.1"
+}
+
+repositories {
+   mavenCentral()
+}
+
+dependencies {
+    // This is h2o-genmodel produced by latest h2o
+    compile files('lib/h2o-genmodel.jar')
+
+    // Spark dependencies
+    // - core
+    compile "org.apache.spark:spark-core_${scalaBinaryVersion}:${sparkVersion}"
+    // - SQL component
+    compile "org.apache.spark:spark-sql_${scalaBinaryVersion}:${sparkVersion}"
+
+    // Add joda optional convert library which is required in Scala environment
+    compile "org.joda:joda-convert:1.7"
+
+    // And Scala library
+    compile "org.scala-lang:scala-library:${scalaVersion}"
+}
+
+// Setup resources
+sourceSets {
+    main {
+        java {
+            srcDirs += "src/main/pojo"
+        }
+    }
+}
+
+shadowJar {
+
+    dependencies {
+      include(dependency(project.files('lib/h2o-genmodel.jar')))
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.8'
+}
+

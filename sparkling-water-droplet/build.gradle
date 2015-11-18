@@ -1,6 +1,6 @@
 /*
  * This is a simple build file for building Sparkling Water applications.
- * 
+ *
  * For more details please follow README.md.
  */
 
@@ -32,11 +32,10 @@ buildscript {
 // Configure project properties
 //
 ext {
-    // 
+    // Spark version
     sparkVersion = '1.5'
-    // Latest stable version for Spark 1.4
-    spWaterVersion = "${sparkVersion}.2"
-    // Use 1.2.X for Spark 1.2
+    // Latest stable version for the specified version of Spark
+    spWaterVersion = "${sparkVersion}.6"
 
     // Scala binary version
     scalaBinaryVersion = '2.10'
@@ -134,7 +133,7 @@ test.dependsOn scalatest
 // Setup Gradle wrapper task to obtain latest gradle version
 //
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.2.1'
+    gradleVersion = '2.9'
 }
 
 //
@@ -165,12 +164,17 @@ shadowJar {
         include(dependency("ai.h2o:h2o-persist-hdfs"))
         include(dependency("ai.h2o:h2o-genmodel"))
         include(dependency("joda-time:joda-time"))
+        include(dependency("org.joda:joda-convert"))
         include(dependency("org.javassist:javassist"))
         include(dependency("gov.nist.math:jama"))
         include(dependency("com.google.code.gson:gson"))
-        include(dependency("org.reflections:reflections"))
-        include(dependency("ai.h2o:google-analytics-java"))
         include(dependency("com.google.guava:guava"))
+        include(dependency("ai.h2o:reflections"))
+        include(dependency("ai.h2o:google-analytics-java"))
         include(dependency("com.github.tony19:named-regexp"))
+
+        include(dependency("org.eclipse.jetty.aggregate:jetty-servlet"))
+        include(dependency("org.eclipse.jetty:jetty-server"))
+        include(dependency("org.eclipse.jetty:jetty-plus:8.1.17.v20150415"))
     }
 }

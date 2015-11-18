@@ -26,3 +26,5 @@ build/
 .project
 .settings/
 
+// Ignore h2ologs
+h2ologs/

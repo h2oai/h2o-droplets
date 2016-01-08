@@ -35,7 +35,7 @@ ext {
     // Spark version
     sparkVersion = '1.5'
     // Latest stable version for the specified version of Spark
-    spWaterVersion = "${sparkVersion}.6"
+    spWaterVersion = "${sparkVersion}.9"
 
     // Scala binary version
     scalaBinaryVersion = '2.10'

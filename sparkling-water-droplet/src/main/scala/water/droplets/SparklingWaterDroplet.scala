@@ -38,7 +38,7 @@ object SparklingWaterDroplet {
 
     // Create H2O Context
     val h2oContext = new H2OContext(sc).start()
-    import h2oContext._
+    import h2oContext.implicits._
 
     // Register file to be available on all nodes
     sc.addFile(new File("data/iris.csv").getAbsolutePath)
@@ -59,8 +59,8 @@ object SparklingWaterDroplet {
     val predict = gbmModel.score(irisTable)('predict)
 
     // Compute number of mispredictions with help of Spark API
-    val trainRDD = asRDD[StringHolder](irisTable('class))
-    val predictRDD = asRDD[StringHolder](predict)
+    val trainRDD = h2oContext.asRDD[StringHolder](irisTable('class))
+    val predictRDD = h2oContext.asRDD[StringHolder](predict)
 
     // Make sure that both RDDs has the same number of elements
     assert(trainRDD.count() == predictRDD.count)

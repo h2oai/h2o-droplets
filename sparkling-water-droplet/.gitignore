@@ -28,3 +28,7 @@ build/
 
 // Ignore h2ologs
 h2ologs/
+
+// SBT target
+target/
+

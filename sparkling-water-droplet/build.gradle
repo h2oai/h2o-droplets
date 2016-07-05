@@ -35,7 +35,7 @@ ext {
     // Spark version
     sparkVersion = '1.6'
     // Latest stable version for the specified version of Spark
-    spWaterVersion = "${sparkVersion}.2"
+    spWaterVersion = "${sparkVersion}.4"
 
     // Scala binary version
     scalaBinaryVersion = '2.10'
@@ -133,7 +133,7 @@ test.dependsOn scalatest
 // Setup Gradle wrapper task to obtain latest gradle version
 //
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.11'
+    gradleVersion = '2.13'
 }
 
 //

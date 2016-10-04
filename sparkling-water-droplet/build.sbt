@@ -7,7 +7,7 @@ lazy val commonSettings = Seq(
   organization := "ai.h2o",
   version := "0.1.0",
   // set the Scala version used for the project
-  scalaVersion := "2.10.6"
+  scalaVersion := "2.11.8"
 )
 
 // 
@@ -21,6 +21,9 @@ lazy val commonDeps = Seq(
 lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   settings(
+    // TODO remove this before merging!!!
+    resolvers += "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository",
+
     // set the name of the project
     name := "sparkling-water-droplet",
 

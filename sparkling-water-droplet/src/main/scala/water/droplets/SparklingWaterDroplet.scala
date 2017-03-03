@@ -19,9 +19,10 @@ package water.droplets
 
 import java.io.File
 
+import hex.Model
 import hex.tree.gbm.GBM
 import hex.tree.gbm.GBMModel.GBMParameters
-import org.apache.spark.h2o.{StringHolder, H2OContext}
+import org.apache.spark.h2o.{H2OConf, StringHolder, H2OContext}
 import org.apache.spark.{SparkFiles, SparkContext, SparkConf}
 import water.fvec.H2OFrame
 
@@ -35,9 +36,9 @@ object SparklingWaterDroplet {
     // Create Spark Context
     val conf = configure("Sparkling Water Droplet")
     val sc = new SparkContext(conf)
-
     // Create H2O Context
-    val h2oContext = new H2OContext(sc).start()
+    val hConf = new H2OConf(sc)
+    val h2oContext = H2OContext.getOrCreate(sc, hConf)
     import h2oContext.implicits._
 
     // Register file to be available on all nodes
@@ -48,8 +49,10 @@ object SparklingWaterDroplet {
 
     // Build GBM model
     val gbmParams = new GBMParameters()
+    val mp:Model.Parameters = gbmParams
+    mp._train = irisTable.key
     gbmParams._train = irisTable
-    gbmParams._response_column = 'class
+    gbmParams._response_column = 'class.toString
     gbmParams._ntrees = 5
 
     val gbm = new GBM(gbmParams)

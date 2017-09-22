@@ -16,8 +16,8 @@ apply plugin: 'eclipse'
 ext { 
   // Configure h2o-dev dependency information
   h2oBranch = 'rel-turan'
-  h2oBuildNumber = '4'
-  h2oProjectVersion = "3.8.1.${h2oBuildNumber}"
+  h2oBuildNumber = '99999'
+  h2oProjectVersion = "3.11.0.${h2oBuildNumber}"
 }
 
 // In this section you declare where to find the dependencies of your project

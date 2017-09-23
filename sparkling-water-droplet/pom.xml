@@ -22,49 +22,7 @@
             <version>${scala.version}</version>
             <!--<scope>provided</scope>-->
         </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-
-            <exclusions>
-                <exclusion>
-                    <!-- make sure wrong scala version is not pulled in -->
-                    <groupId>org.scala-lang</groupId>
-                    <artifactId>scala-library</artifactId>
-                </exclusion>
-                <exclusion>
-                    <!-- make sure wrong scala version is not pulled in -->
-                    <groupId>org.scala-lang</groupId>
-                    <artifactId>scalap</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-mllib_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jpmml</groupId>
-                    <artifactId>pmml-model</artifactId>
-                </exclusion>
-            </exclusions>
-
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-
-        </dependency>
+        <!-- test deps -->
         <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_${scala.binary.version}</artifactId>
@@ -75,13 +33,12 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
         </dependency>
-
+        <!-- Sparkling Water deps -->
         <dependency>
             <groupId>ai.h2o</groupId>
             <artifactId>sparkling-water-core_${scala.binary.version}</artifactId>
             <version>${sparkling.version}</version>
         </dependency>
-        
         <dependency>
             <groupId>ai.h2o</groupId>
             <artifactId>sparkling-water-repl_${scala.binary.version}</artifactId>

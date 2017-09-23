@@ -33,13 +33,13 @@ buildscript {
 //
 ext {
     // Spark version
-    sparkVersion = '1.6'
+    sparkVersion = '2.2'
     // Latest stable version for the specified version of Spark
-    spWaterVersion = "${sparkVersion}.4"
+    spWaterVersion = "${sparkVersion}.0"
 
     // Scala binary version
-    scalaBinaryVersion = '2.10'
-    scalaVersion = '2.10.4'
+    scalaBinaryVersion = '2.11'
+    scalaVersion = '2.11.8'
 }
 
 

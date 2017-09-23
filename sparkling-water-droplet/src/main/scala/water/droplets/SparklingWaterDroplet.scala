@@ -37,7 +37,7 @@ object SparklingWaterDroplet {
     val sc = new SparkContext(conf)
 
     // Create H2O Context
-    val h2oContext = new H2OContext(sc).start()
+    val h2oContext = H2OContext.getOrCreate(sc)
     import h2oContext.implicits._
 
     // Register file to be available on all nodes

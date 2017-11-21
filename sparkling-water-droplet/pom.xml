@@ -10,7 +10,7 @@
 
     <properties>
         <spark.version>2.2.0</spark.version>
-        <sparkling.version>2.2.0</sparkling.version>
+        <sparkling.version>2.2.2</sparkling.version>
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
     </properties>

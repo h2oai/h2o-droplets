@@ -3,9 +3,9 @@
 This is a simple example project to start coding with Sparkling Water.
 
 ## Dependencies
-This droplet uses Sparkling Water 1.2.5 which integrates:
-  - Spark 1.2
-  - H2O 3.0 Shannon
+This droplet uses Sparkling Water 2.2.2 which integrates:
+  - Spark 2.2
+  - H2O 3.14.0.7 Weierstrass
 
 For more details see [build.gradle](build.gradle).
 
@@ -82,7 +82,7 @@ The command creates jar file `build/libs/sparkling-water-droplet-app.jar` contai
 
 Submit application to Spark cluster (in this case, local cluster is used):
 ```
-export MASTER='local-cluster[3,2,1024]'
+export MASTER="local[*]"
 $SPARK_HOME/bin/spark-submit --class water.droplets.SparklingWaterDroplet build/libs/sparkling-water-droplet-app.jar
 ```
 

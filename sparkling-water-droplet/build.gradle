@@ -35,7 +35,7 @@ ext {
     // Spark version
     sparkVersion = '2.2'
     // Latest stable version for the specified version of Spark
-    spWaterVersion = "${sparkVersion}.0"
+    spWaterVersion = "${sparkVersion}.2"
 
     // Scala binary version
     scalaBinaryVersion = '2.11'
@@ -77,6 +77,10 @@ dependencies {
     }
     // Sparkling Water Examples (optional)
     compile("ai.h2o:sparkling-water-examples_${scalaBinaryVersion}:${spWaterVersion}")
+    // Sparkling Water REPL (optional)
+    compile("ai.h2o:sparkling-water-examples_${scalaBinaryVersion}:${spWaterVersion}")
+    // Sparkling Water ML package (optional)
+    compile("ai.h2o:sparkling-water-examples_${scalaBinaryVersion}:${spWaterVersion}")
 
     // Scala project needs dependency on Scala library
     compile "org.scala-lang:scala-library:$scalaVersion"
@@ -98,9 +102,15 @@ group = "ai.h2o"
 
 // Activate Zinc compiler and configure scalac
 tasks.withType(ScalaCompile) {
-    scalaCompileOptions.useCompileDaemon = false
-    scalaCompileOptions.useAnt = false
-    scalaCompileOptions.additionalParameters = ['-target:jvm-1.6']
+    scalaCompileOptions.additionalParameters = [
+            "-target:jvm-1.7",
+            "-feature",
+            // enable several optional scala features so Scala knows we use them on purpose
+            "-language:reflectiveCalls",
+            "-language:postfixOps",
+            "-language:existentials",
+            "-language:implicitConversions",
+    ]
 }
 
 // In resulting jar include Scala binary version
@@ -133,7 +143,7 @@ test.dependsOn scalatest
 // Setup Gradle wrapper task to obtain latest gradle version
 //
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.13'
+    gradleVersion = '4.3.1'
 }
 
 //
@@ -144,37 +154,56 @@ task wrapper(type: Wrapper) {
 apply plugin: 'com.github.johnrengelman.shadow'
 
 shadowJar {
+    mergeServiceFiles()
+    relocate 'javassist', 'ai.h2o.javassist'
+    // Relocate Eclipse Jetty to avoid collisions with Spark Jetty (newer version)
+    relocate 'org.eclipse.jetty', 'ai.h2o.org.eclipse.jetty'
+
     // Configure name of output jar as sparkling-water-droplet-app.jar
     appendix = 'app'
     archiveName = "${baseName}-${appendix}.${extension}"
 
-    // Dependencies included in resulting jar file
     dependencies {
         // This has to be specific list of dependencies
         // Do not forget that Sparkling Water App is intended
         // to run inside Spark environment providing some jars
         // (like hadoop, aws) on classpath
+        //
         include(dependency("ai.h2o:sparkling-water-core_${scalaBinaryVersion}"))
         include(dependency("ai.h2o:sparkling-water-examples_${scalaBinaryVersion}"))
+        include(dependency("ai.h2o:sparkling-water-repl_${scalaBinaryVersion}"))
+        include(dependency("ai.h2o:sparkling-water-ml_${scalaBinaryVersion}"))
+
+        include(dependency("ai.h2o:h2o-genmodel"))
         include(dependency("ai.h2o:h2o-core"))
         include(dependency("ai.h2o:h2o-scala_${scalaBinaryVersion}"))
-        include(dependency("ai.h2o:h2o-app"))
         include(dependency("ai.h2o:h2o-web"))
         include(dependency("ai.h2o:h2o-algos"))
+        include(dependency("ai.h2o:h2o-automl"))
         include(dependency("ai.h2o:h2o-persist-hdfs"))
-        include(dependency("ai.h2o:h2o-genmodel"))
+        include(dependency("ai.h2o:h2o-persist-s3"))
+        include(dependency("ai.h2o:h2o-avro-parser"))
+        include(dependency("ai.h2o:h2o-orc-parser"))
+        include(dependency("ai.h2o:h2o-parquet-parser"))
+        include(dependency("ai.h2o:reflections"))
+        include(dependency("ai.h2o:google-analytics-java"))
+        include(dependency("ai.h2o:deepwater-backend-api"))
+        include(dependency("ai.h2o:h2o-ext-xgboost"))
+        include(dependency("ai.h2o:h2o-genmodel-ext-xgboost"))
+
         include(dependency("joda-time:joda-time"))
         include(dependency("org.joda:joda-convert"))
         include(dependency("org.javassist:javassist"))
         include(dependency("gov.nist.math:jama"))
         include(dependency("com.google.code.gson:gson"))
-        include(dependency("com.google.guava:guava"))
-        include(dependency("ai.h2o:reflections"))
-        include(dependency("ai.h2o:google-analytics-java"))
         include(dependency("com.github.tony19:named-regexp"))
-
+        include(dependency("com.amazonaws:aws-java-sdk-s3"))
+        include(dependency("com.amazonaws:aws-java-sdk-kms"))
+        include(dependency("com.amazonaws:aws-java-sdk-core"))
+        include(dependency("no.priv.garshol.duke:duke"))
         include(dependency("org.eclipse.jetty.aggregate:jetty-servlet"))
         include(dependency("org.eclipse.jetty:jetty-server"))
         include(dependency("org.eclipse.jetty:jetty-plus:8.1.17.v20150415"))
+        baseName = "${baseName}_${scalaBinaryVersion}"
     }
 }

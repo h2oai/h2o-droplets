@@ -5,7 +5,7 @@ This is a simple example project to start with H<sub>2</sub>O.
 ## Project dependencies
 
 The project is built on top of:
-  - H2O 3.0 Shannon release
+  - H2O 3.16.0.4 Wheeler release
 
 For more details, please, see [build file](build.gradle).
 

@@ -15,9 +15,9 @@ apply plugin: 'eclipse'
 //
 ext { 
   // Configure h2o-dev dependency information
-  h2oBranch = 'rel-turan'
-  h2oBuildNumber = '99999'
-  h2oProjectVersion = "3.11.0.${h2oBuildNumber}"
+  h2oBranch = 'rel-wheeler'
+  h2oBuildNumber = '4'
+  h2oProjectVersion = "3.16.0.${h2oBuildNumber}"
 }
 
 // In this section you declare where to find the dependencies of your project
@@ -83,6 +83,6 @@ compileJava {
 // Setup Gradle wrapper task to obtain latest gradle version
 //
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.13'
+    gradleVersion = '4.5.1'
 }
 

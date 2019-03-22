@@ -10,6 +10,9 @@ apply plugin: 'scala'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
+// Support local launch of application
+apply plugin: 'application'
+mainClassName = 'water.droplets.H2OScalaDroplet'
 // 
 // Setup build script
 //
@@ -19,7 +22,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'org.github.mansur.scalastyle:gradle-scalastyle-plugin_2.10:0.4.1'
+      classpath 'org.github.ngbinh.scalastyle:gradle-scalastyle-plugin_2.11:1.0.1'
   }
 }
 
@@ -28,13 +31,13 @@ buildscript {
 //
 ext { 
   // Configure h2o-dev dependency information
-  h2oBranch = 'rel-shannon'
-  h2oBuildNumber = '26'
-  h2oProjectVersion = "3.0.0.${h2oBuildNumber}"
+  h2oBranch = 'rel-xu'
+  h2oBuildNumber = '6'
+  h2oProjectVersion = "3.22.1.${h2oBuildNumber}"
 
   // Scala binary version
-  scalaBinaryVersion = '2.10'
-  scalaVersion = '2.10.4'
+  scalaBinaryVersion = '2.11'
+  scalaVersion = '2.11.12'
 }
 
 
@@ -101,9 +104,7 @@ group = "ai.h2o"
 
 // Activate Zinc compiler and configure scalac
 tasks.withType(ScalaCompile) {
-    scalaCompileOptions.useCompileDaemon = false
-    scalaCompileOptions.useAnt = false
-    scalaCompileOptions.additionalParameters = ['-target:jvm-1.6']
+    scalaCompileOptions.additionalParameters = ['-target:jvm-1.7']
 }
 
 // In resulting jar include Scala binary version
@@ -113,29 +114,4 @@ jar {
 
 // Check Scala coding conventions
 apply from: 'gradle/scalastyle.gradle'
-
-// Define a new task to run Scala tests
-task scalatest(dependsOn: compileTestScala) << {
-  ant.taskdef(
-    name:      'scalatest',
-    classname: 'org.scalatest.tools.ScalaTestAntTask',
-    classpath: configurations.testRuntime.asPath+':'+compileScala.destinationDir
-  )
-  ant.scalatest(
-    runpath: sourceSets.test.output.classesDir,
-    haltonfailure: 'true',
-    fork: 'false'
-  ) {
-    reporter(type: 'stderr')
-  }
-}
-
-test.dependsOn scalatest
-
-//
-// Setup Gradle wrapper task to obtain latest gradle version
-//
-task wrapper(type: Wrapper) {
-  gradleVersion = '2.2.1'
-}
 

@@ -5,7 +5,7 @@ This is a simple example project to start coding with Sparkling Water.
 ## Dependencies
 This droplet uses Sparkling Water 2.4.7 which integrates:
   - Spark 2.4
-  - H2O 3.12.1.7
+  - H2O 3.12.1.6
 
 For more details see [build.gradle](build.gradle).
 

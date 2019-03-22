@@ -7,7 +7,7 @@ lazy val commonSettings = Seq(
   organization := "ai.h2o",
   version := "0.1.0",
   // set the Scala version used for the project
-  scalaVersion := "2.11.8"
+  scalaVersion := "2.11.12"
 )
 
 // 

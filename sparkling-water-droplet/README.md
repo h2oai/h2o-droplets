@@ -3,9 +3,9 @@
 This is a simple example project to start coding with Sparkling Water.
 
 ## Dependencies
-This droplet uses Sparkling Water 2.2.2 which integrates:
-  - Spark 2.2
-  - H2O 3.14.0.7 Weierstrass
+This droplet uses Sparkling Water 2.4.7 which integrates:
+  - Spark 2.4
+  - H2O 3.12.1.7
 
 For more details see [build.gradle](build.gradle).
 
@@ -37,22 +37,9 @@ For running a simple application:
 
 ## Starting with Idea
 
-There are two ways to open this project in Idea
-
-  * Using Gradle build file directly
-    1. Open project's `build.gradle` in Idea via _File > Open_ 
+To open this project in InteliJ, import it as a Gradle project
+via _New > Project From Existing Sources > and select Gradle_
     
-or
-  
-  Using Gradle generated project files
-    1. Generate Idea configuration files via
-      ```
-      ./gradlew idea
-      ```
-    2. and open project in Idea via _File > Open_
-    
-> Note: To clean up Idea project files please launch `./gradlew cleanIdea`
-
 ## Starting with Eclipse
   1. Generate Eclipse project files via `./gradlew eclipse`
   2. Open project in Eclipse via _File > Import > Existing Projects into Workspace_

@@ -1,14 +1,15 @@
-package examples
+package water.droplets
 
 import hex.genmodel.GenModel
 import hex.genmodel.easy.{EasyPredictModelWrapper, RowData}
 import org.apache.spark.sql.Row
-import org.apache.spark.{Logging, SparkConf, SparkContext, SparkFiles}
+import org.apache.spark.internal.Logging
+import org.apache.spark.{SparkConf, SparkContext, SparkFiles}
 
 /**
- * Simple example showing how to use pojo directly from Spark.
- */
-object PojoExample extends Logging {
+  * Simple example showing how to use pojo directly from Spark.
+  */
+object UsePojoDroplet extends Logging {
 
   def main(args: Array[String]): Unit = {
     logInfo("Starting SparkContext, SQLContext, ....")
@@ -27,11 +28,12 @@ object PojoExample extends Logging {
       .map(_.split(","))
       .map(p => Row(f(p(0)), f(p(1)), f(p(2)), f(p(3))))
 
-    logInfo("Loading POJO by its class name: 'gbm_02c92461_25ea_45d2_9bf9_af2fa92758d2'")
+    logInfo("Loading POJO by its class name: 'gbm_aa57ff38_927d_40ba_973b_4b0f5e281d03'")
     // We use classloading here instead of referencing pojo directly.
     // In normal case, you should use here a dedicated URI classloader to load
     // POJO from given URI.
-    val genModel:GenModel = Class.forName("gbm_02c92461_25ea_45d2_9bf9_af2fa92758d2").newInstance().asInstanceOf[GenModel]
+    val genModel: GenModel = Class.forName("gbm_aa57ff38_927d_40ba_973b_4b0f5e281d03")
+      .newInstance().asInstanceOf[GenModel]
     // Create EasyWrapper for generated model
     val easyModel = new EasyPredictModelWrapper(genModel)
     val header = genModel.getNames
@@ -46,7 +48,7 @@ object PojoExample extends Logging {
     val predictionRdd = testDataRdd.map(row => {
       val r = new RowData
       // This is simple use that header of POJO is matching
-      header.indices.foreach(idx => r.put(header(idx), row.getDouble(idx).asInstanceOf[AnyRef]) )
+      header.indices.foreach(idx => r.put(header(idx), row.getDouble(idx).asInstanceOf[AnyRef]))
       val prediction = easyModel.predictMultinomial(r)
       prediction
     })
@@ -61,7 +63,7 @@ object PojoExample extends Logging {
 
   /** Convert string to double.
     *
-    * It replaces all non-parseable strings with Double.NaN  */
+    * It replaces all non-parsable strings with Double.NaN  */
   def f(s: String): Double = {
     try {
       s.trim.toDouble

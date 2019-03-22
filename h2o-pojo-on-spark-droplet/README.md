@@ -1,9 +1,12 @@
 # Spark and H2O Pojo
 
-This is a simple example project to start coding with H2O Pojo.
+This is a simple example project to start with H<sub>2</sub>O Pojo. 
+
+Recommendation: If you plan to use H2O POJO/MOJO in Spark environment, we sugget to have a look at Sparkling Water
+project.
 
 ## Dependencies
-  - Spark 1.5
+  - Spark 2.4
 
 For more details see [build.gradle](build.gradle).
 
@@ -20,34 +23,10 @@ For more details see [build.gradle](build.gradle).
 ├─ gradlew        - Gradle wrapper 
 ```
 
-## Project building
-
-For building, please, use provided `gradlew` command:
-```
-./gradlew build
-```
-
-### Run demo
-For running a simple application:
-```
-./gradlew run
-```
-
 ## Starting with Idea
 
-There are two ways to open this project in Idea
-
-  * Using Gradle build file directly
-    1. Open project's `build.gradle` in Idea via _File > Open_ 
-    
-or
-  
-  Using Gradle generated project files
-    1. Generate Idea configuration files via
-      ```
-      ./gradlew idea
-      ```
-    2. and open project in Idea via _File > Open_
+To open this project in InteliJ, import it as a Gradle project
+via _New > Project From Existing Sources > and select Gradle_
     
 > Note: To clean up Idea project files please launch `./gradlew cleanIdea`
 
@@ -55,13 +34,28 @@ or
   1. Generate Eclipse project files via `./gradlew eclipse`
   2. Open project in Eclipse via _File > Import > Existing Projects into Workspace_
 
+> Note: To clean up Eclipse project files please launch `./gradlew cleanEclipse`
 
-## Running tests
+## Project building
+
+For building, please, use encapsulated `gradlew` command:
+```
+./gradlew build
+```
+
+### Run demo
+For running a simple application on top of Spark:
+```
+./gradlew run
+```
+
+## Run tests
 
 To run tests, please, run:
 ```
 ./gradlew test
 ```
+
 
 ## Creating and Running Spark Application
 
@@ -72,9 +66,9 @@ Create application assembly which can be directly submitted to Spark cluster:
 
 The command creates jar file `build/libs/cap1-assembler-all.jar` containing all necessary classes to run application on top of Spark cluster.
 
-Submit application to Spark cluster (in this case, local cluster of 6nodes is used):
+Submit application to a local Spark cluster:
 ```
-export MASTER='local-cluster[6,2,1024]'
+export MASTER='local[*]'
 $SPARK_HOME/bin/spark-submit --class examples.PojoExample build/libs/cap1-assembler-all.jar
 ```
 

@@ -7,6 +7,7 @@ kind of projects.
 Currently it provides:
   * _h2o-java-droplet_ - a template for Java-based H2O project
   * _h2o-scala-droplet_ - a template for Scala-based H2O project
+  * _h2o-pojo-on-spark-droplet_ - a template for doing predictions with POJO on Spark (Without Sparkling Water)
   * _sparkling-water-droplet_ - a template for Sparkling Water project
   * _sparkling-water-mojo-scorer-droplet_ - a template for scoring project in Sparkling Water
 

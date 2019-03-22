@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:5.0.0'
     }
 }
 
@@ -14,14 +14,14 @@ apply plugin: 'scala'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'com.github.johnrengelman.shadow'
-
+// Support local launch of application
 apply plugin: 'application'
-mainClassName = 'examples.PojoExample'
+mainClassName = 'water.droplets.UsePojoDroplet'
 
 ext {
-  scalaBinaryVersion = "2.10"
-  scalaVersion = "2.10.4"
-  sparkVersion = "1.5.1"
+  scalaBinaryVersion = "2.11"
+  scalaVersion = "2.11.12"
+  sparkVersion = "2.4.0"
 }
 
 repositories {
@@ -29,9 +29,7 @@ repositories {
 }
 
 dependencies {
-    // This is h2o-genmodel produced by latest h2o
-    compile files('lib/h2o-genmodel.jar')
-
+    compile "ai.h2o:h2o-genmodel:3.22.1.6"
     // Spark dependencies
     // - core
     compile "org.apache.spark:spark-core_${scalaBinaryVersion}:${sparkVersion}"
@@ -55,13 +53,8 @@ sourceSets {
 }
 
 shadowJar {
-
+    mergeServiceFiles()
     dependencies {
-      include(dependency(project.files('lib/h2o-genmodel.jar')))
+      include(dependency("ai.h2o:h2o-genmodel"))
     }
 }
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.8'
-}
-

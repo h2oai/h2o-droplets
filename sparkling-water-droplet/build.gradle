@@ -23,8 +23,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
-        classpath 'org.github.mansur.scalastyle:gradle-scalastyle-plugin_2.10:0.4.1'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:5.0.0'
+        classpath 'org.github.ngbinh.scalastyle:gradle-scalastyle-plugin_2.11:1.0.1'
     }
 }
 
@@ -33,13 +33,14 @@ buildscript {
 //
 ext {
     // Spark version
-    sparkVersion = '2.2'
+    sparkMajorVersion = '2.4'
+    sparkVersion = "${sparkMajorVersion}.0"
     // Latest stable version for the specified version of Spark
-    spWaterVersion = "${sparkVersion}.2"
+    spWaterVersion = "${sparkMajorVersion}.7"
 
     // Scala binary version
-    scalaBinaryVersion = '2.11'
-    scalaVersion = '2.11.8'
+    scalaBaseVersion = '2.11'
+    scalaVersion = '2.11.12'
 }
 
 
@@ -71,22 +72,35 @@ repositories {
 
 // This section declares the dependencies for your production and test code
 dependencies {
+    // Spark Core
+    compile "org.apache.spark:spark-core_${scalaBaseVersion}:${sparkVersion}"
+    // Spark Core
+    compile "org.apache.spark:spark-repl_${scalaBaseVersion}:${sparkVersion}"
+    // Spark SQL
+    compile "org.apache.spark:spark-sql_${scalaBaseVersion}:${sparkVersion}"
+    // Spark MLLib
+    compile "org.apache.spark:spark-mllib_${scalaBaseVersion}:${sparkVersion}"
+
+    // Spark Streaming
+    compile "org.apache.spark:spark-streaming_${scalaBaseVersion}:${sparkVersion}"
+
+
     // Sparkling Water Core
-    compile("ai.h2o:sparkling-water-core_${scalaBinaryVersion}:${spWaterVersion}") {
+    compile("ai.h2o:sparkling-water-core_${scalaBaseVersion}:${spWaterVersion}") {
         exclude group: "javax.servlet", module: "servlet-api"
     }
     // Sparkling Water Examples (optional)
-    compile("ai.h2o:sparkling-water-examples_${scalaBinaryVersion}:${spWaterVersion}")
+    compile("ai.h2o:sparkling-water-examples_${scalaBaseVersion}:${spWaterVersion}")
     // Sparkling Water REPL (optional)
-    compile("ai.h2o:sparkling-water-examples_${scalaBinaryVersion}:${spWaterVersion}")
+    compile("ai.h2o:sparkling-water-repl_${scalaBaseVersion}:${spWaterVersion}")
     // Sparkling Water ML package (optional)
-    compile("ai.h2o:sparkling-water-examples_${scalaBinaryVersion}:${spWaterVersion}")
+    compile("ai.h2o:sparkling-water-ml_${scalaBaseVersion}:${spWaterVersion}")
 
     // Scala project needs dependency on Scala library
     compile "org.scala-lang:scala-library:$scalaVersion"
 
     // And use scalatest for Scala testing
-    testCompile "org.scalatest:scalatest_${scalaBinaryVersion}:2.2.1"
+    testCompile "org.scalatest:scalatest_${scalaBaseVersion}:2.2.1"
 }
 
 //
@@ -103,7 +117,7 @@ group = "ai.h2o"
 // Activate Zinc compiler and configure scalac
 tasks.withType(ScalaCompile) {
     scalaCompileOptions.additionalParameters = [
-            "-target:jvm-1.7",
+            "-target:jvm-1.8",
             "-feature",
             // enable several optional scala features so Scala knows we use them on purpose
             "-language:reflectiveCalls",
@@ -115,36 +129,11 @@ tasks.withType(ScalaCompile) {
 
 // In resulting jar include Scala binary version
 jar {
-    baseName = "${project.name}_${scalaBinaryVersion}"
+    baseName = "${project.name}_${scalaBaseVersion}"
 }
 
 // Check Scala coding conventions
 apply from: 'gradle/scalastyle.gradle'
-
-// Define a new task to run Scala tests
-task scalatest(dependsOn: compileTestScala) << {
-    ant.taskdef(
-            name: 'scalatest',
-            classname: 'org.scalatest.tools.ScalaTestAntTask',
-            classpath: configurations.testRuntime.asPath + ':' + compileScala.destinationDir
-    )
-    ant.scalatest(
-            runpath: sourceSets.test.output.classesDir,
-            haltonfailure: 'true',
-            fork: 'false'
-    ) {
-        reporter(type: 'stderr')
-    }
-}
-
-test.dependsOn scalatest
-
-//
-// Setup Gradle wrapper task to obtain latest gradle version
-//
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.3.1'
-}
 
 //
 // Configure assembly to create Spark application
@@ -154,34 +143,54 @@ task wrapper(type: Wrapper) {
 apply plugin: 'com.github.johnrengelman.shadow'
 
 shadowJar {
-    mergeServiceFiles()
-    relocate 'javassist', 'ai.h2o.javassist'
-    // Relocate Eclipse Jetty to avoid collisions with Spark Jetty (newer version)
-    relocate 'org.eclipse.jetty', 'ai.h2o.org.eclipse.jetty'
 
     // Configure name of output jar as sparkling-water-droplet-app.jar
     appendix = 'app'
     archiveName = "${baseName}-${appendix}.${extension}"
 
+    mergeServiceFiles()
+    relocate 'javassist', 'ai.h2o.javassist'
+    // Relocate Eclipse Jetty to avoid collisions with Spark Jetty (newer version)
+    relocate 'org.eclipse.jetty', 'ai.h2o.org.eclipse.jetty'
+    relocate 'com.google.common', 'ai.h2o.com.google.common'
     dependencies {
         // This has to be specific list of dependencies
         // Do not forget that Sparkling Water App is intended
         // to run inside Spark environment providing some jars
         // (like hadoop, aws) on classpath
         //
-        include(dependency("ai.h2o:sparkling-water-core_${scalaBinaryVersion}"))
-        include(dependency("ai.h2o:sparkling-water-examples_${scalaBinaryVersion}"))
-        include(dependency("ai.h2o:sparkling-water-repl_${scalaBinaryVersion}"))
-        include(dependency("ai.h2o:sparkling-water-ml_${scalaBinaryVersion}"))
+        include(dependency("ai.h2o:sparkling-water-core_${scalaBaseVersion}"))
+        include(dependency("ai.h2o:sparkling-water-examples_${scalaBaseVersion}"))
+        include(dependency("ai.h2o:sparkling-water-repl_${scalaBaseVersion}"))
+        include(dependency("ai.h2o:sparkling-water-ml_${scalaBaseVersion}"))
 
         include(dependency("ai.h2o:h2o-genmodel"))
         include(dependency("ai.h2o:h2o-core"))
-        include(dependency("ai.h2o:h2o-scala_${scalaBinaryVersion}"))
+        include(dependency("ai.h2o:h2o-scala_${scalaBaseVersion}"))
         include(dependency("ai.h2o:h2o-web"))
         include(dependency("ai.h2o:h2o-algos"))
         include(dependency("ai.h2o:h2o-automl"))
         include(dependency("ai.h2o:h2o-persist-hdfs"))
         include(dependency("ai.h2o:h2o-persist-s3"))
+        include(dependency("ai.h2o:h2o-persist-gcs"))
+
+
+        include(dependency("com.google.cloud:.*"))
+        include(dependency("com.google.auth:.*"))
+        include(dependency("com.google.api:.*"))
+        include(dependency("com.google.api-client:.*"))
+        include(dependency("com.google.http-client:.*"))
+        include(dependency("com.google.oauth-client:.*"))
+        include(dependency("com.google.api:.*"))
+        include(dependency("com.google.apis:.*"))
+        include(dependency("org.threeten:threetenbp"))
+        include(dependency("io.opencensus:.*"))
+        include(dependency("io.grpc:grpc-context"))
+
+        include(dependency("com.google.guava:guava"))
+        include(dependency("com.google.guava:guava-concurrent"))
+
+
         include(dependency("ai.h2o:h2o-avro-parser"))
         include(dependency("ai.h2o:h2o-orc-parser"))
         include(dependency("ai.h2o:h2o-parquet-parser"))
@@ -190,7 +199,8 @@ shadowJar {
         include(dependency("ai.h2o:deepwater-backend-api"))
         include(dependency("ai.h2o:h2o-ext-xgboost"))
         include(dependency("ai.h2o:h2o-genmodel-ext-xgboost"))
-
+        include(dependency("ai.h2o:h2o-jetty-8"))
+        include(dependency("ai.h2o:h2o-webserver-iface"))
         include(dependency("joda-time:joda-time"))
         include(dependency("org.joda:joda-convert"))
         include(dependency("org.javassist:javassist"))
@@ -201,9 +211,13 @@ shadowJar {
         include(dependency("com.amazonaws:aws-java-sdk-kms"))
         include(dependency("com.amazonaws:aws-java-sdk-core"))
         include(dependency("no.priv.garshol.duke:duke"))
-        include(dependency("org.eclipse.jetty.aggregate:jetty-servlet"))
-        include(dependency("org.eclipse.jetty:jetty-server"))
-        include(dependency("org.eclipse.jetty:jetty-plus:8.1.17.v20150415"))
-        baseName = "${baseName}_${scalaBinaryVersion}"
+
+        include(dependency("org.eclipse.jetty:.*"))
+
+        baseName = "${baseName}_${scalaBaseVersion}"
     }
+}
+
+artifacts {
+    compile shadowJar
 }

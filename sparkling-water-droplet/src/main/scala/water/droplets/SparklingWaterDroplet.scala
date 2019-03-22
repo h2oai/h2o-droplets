@@ -28,8 +28,8 @@ import water.fvec.H2OFrame
 
 
 /**
- * Example of Sparkling Water based application.
- */
+  * Example of Sparkling Water based application.
+  */
 object SparklingWaterDroplet {
 
   def main(args: Array[String]) {
@@ -66,7 +66,7 @@ object SparklingWaterDroplet {
 
     // Make sure that both RDDs has the same number of elements
     assert(trainRDD.count() == predictRDD.count)
-    val numMispredictions = trainRDD.zip(predictRDD).filter( i => {
+    val numMispredictions = trainRDD.zip(predictRDD).filter(i => {
       val act = i._1
       val pred = i._2
       act.result != pred.result
@@ -84,10 +84,10 @@ object SparklingWaterDroplet {
        """.stripMargin)
 
     // Shutdown application
-    spark.stop()
+    h2oContext.stop(true)
   }
 
-  def configure(appName:String = "Sparkling Water Demo"):SparkConf = {
+  def configure(appName: String = "Sparkling Water Demo"): SparkConf = {
     val conf = new SparkConf()
       .setAppName(appName)
     conf.setIfMissing("spark.master", sys.env.getOrElse("spark.master", "local"))

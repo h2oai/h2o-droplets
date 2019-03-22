@@ -16,11 +16,14 @@
  */
 package water.droplets;
 
-import water.DKV;
-import water.H2O;
-import water.H2OApp;
-import water.Iced;
-import water.Key;
+import water.*;
+import water.fvec.Frame;
+import water.fvec.NFSFileVec;
+import water.fvec.Vec;
+import water.parser.ParseDataset;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * H2O bootstrap example.
@@ -61,9 +64,25 @@ public class H2OJavaDroplet {
 
   /** Application Entry Point */
   public static void main(String[] args) {
-	  // Run H2O and build a cloud of 1 member
-	  H2OApp.main(args);
-	  H2O.waitForCloudSize(1, 10*1000 /* ms */);
+
+    // Run H2O and build a cloud of 1 member
+    H2OApp.main(args);
+
+    if (H2O.ARGS.client) {
+      H2O.waitForCloudSize(1, TimeUnit.SECONDS.toMillis(10));
+      final Key key = Key.make("fromJava");
+      try {
+      final NFSFileVec lazy = NFSFileVec.make("/Users/kuba/devel/repos/sparkling-water/examples/smalldata/prostate/prostate.csv");
+      final Frame fr = ParseDataset.parse(key, lazy._key);
+
+      final Value removed = DKV.get(fr._key);
+      System.out.println("Retrieve after removal " + removed);
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+    }
   }
 }
 

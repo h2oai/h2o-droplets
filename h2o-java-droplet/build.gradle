@@ -10,14 +10,17 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
+// Support local launch of application
+apply plugin: 'application'
+mainClassName = 'water.droplets.H2OJavaDroplet'
 //
 // Configure project properties
 //
 ext { 
   // Configure h2o-dev dependency information
-  h2oBranch = 'rel-wheeler'
-  h2oBuildNumber = '4'
-  h2oProjectVersion = "3.16.0.${h2oBuildNumber}"
+  h2oBranch = 'rel-xu'
+  h2oBuildNumber = '6'
+  h2oProjectVersion = "3.22.1.${h2oBuildNumber}"
 }
 
 // In this section you declare where to find the dependencies of your project
@@ -78,11 +81,3 @@ targetCompatibility = 1.7
 compileJava { 
     options.debug = true 
 }
-
-//
-// Setup Gradle wrapper task to obtain latest gradle version
-//
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.5.1'
-}
-

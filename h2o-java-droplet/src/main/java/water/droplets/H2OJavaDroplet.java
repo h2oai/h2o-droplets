@@ -72,7 +72,7 @@ public class H2OJavaDroplet {
       H2O.waitForCloudSize(1, TimeUnit.SECONDS.toMillis(10));
       final Key key = Key.make("fromJava");
       try {
-      final NFSFileVec lazy = NFSFileVec.make("/Users/kuba/devel/repos/sparkling-water/examples/smalldata/prostate/prostate.csv");
+      final NFSFileVec lazy = NFSFileVec.make("data/iris.csv");
       final Frame fr = ParseDataset.parse(key, lazy._key);
 
       final Value removed = DKV.get(fr._key);

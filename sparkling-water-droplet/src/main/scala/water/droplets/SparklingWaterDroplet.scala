@@ -88,9 +88,9 @@ object SparklingWaterDroplet {
   }
 
   def configure(appName: String = "Sparkling Water Demo"): SparkConf = {
-    val conf = new SparkConf()
+    new SparkConf()
       .setAppName(appName)
-    conf.setIfMissing("spark.master", sys.env.getOrElse("spark.master", "local"))
-    conf
+      .setIfMissing("spark.master", sys.env.getOrElse("spark.master", "local"))
+      .set("spark.sql.autoBroadcastJoinThreshold", "-1")
   }
 }

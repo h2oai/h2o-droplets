@@ -24,8 +24,9 @@ import org.apache.spark.ml.feature.{HashingTF, IDF, RegexTokenizer, StopWordsRem
 import org.apache.spark.ml.h2o.features.ColumnPruner
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.types.{StringType, StructField, StructType}
+import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import _root_.hex.grid.GridSearch
+
 import scala.collection.JavaConverters._
 
 /**
@@ -49,8 +50,10 @@ object H2OSWMixedAPIDroplet {
       .option("delimiter", "\t")
       .schema(StructType(Array(
         StructField("label", StringType, nullable = false),
-        StructField("text", StringType, nullable = false))))
-      .csv("data/smsData.txt")
+        StructField("text", StringType, nullable = false),
+        StructField("weight", IntegerType, nullable = false),
+        StructField("fold", IntegerType, nullable = false))))
+      .csv("data/smsData3.txt")
 
     val Array(trainingDF, testingDF) = dataDF.randomSplit(Array(0.9, 0.1))
 
@@ -76,6 +79,9 @@ object H2OSWMixedAPIDroplet {
     params._train = trainingH2OFrame.key
     params._response_column = "label"
     params._ignored_columns = Array("text")
+    params._weights_column = "weight"
+    params._fold_column = "fold"
+
     trainingH2OFrame.replace(0, trainingH2OFrame.vec("label").toCategoricalVec)
 
     // Fire off a grid search
@@ -143,5 +149,6 @@ object H2OSWMixedAPIDroplet {
     new SparkConf()
       .setAppName(appName)
       .setIfMissing("spark.master", sys.env.getOrElse("spark.master", "local"))
+      .set("spark.sql.autoBroadcastJoinThreshold", "-1")
   }
 }

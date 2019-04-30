@@ -1,6 +1,6 @@
-# Sparkling Water Example Project
+# Example Project Mixing Sparkling Water and H2O-3 API
 
-This is a simple example project to start coding with Sparkling Water.
+This is a simple Scala project that demonstrates how to combine Sparkling Water API with H20-3 internal Java API.
 
 ## Dependencies
 This droplet uses Sparkling Water 2.4.9 which integrates:
@@ -15,8 +15,6 @@ For more details see [build.gradle](build.gradle).
 ├─ gradle/        - Gradle definition files
 ├─ src/           - Source code
 │  ├─ main/       - Main implementation code 
-│  │  ├─ scala/
-│  ├─ test/       - Test code
 │  │  ├─ scala/
 ├─ build.gradle   - Build file for this project
 ├─ gradlew        - Gradle wrapper 

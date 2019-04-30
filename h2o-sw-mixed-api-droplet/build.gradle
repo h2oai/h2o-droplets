@@ -12,7 +12,7 @@ apply plugin: 'eclipse'
 
 // Support local launch of application 
 apply plugin: 'application'
-mainClassName = 'water.droplets.SparklingWaterDroplet'
+mainClassName = 'water.droplets.H2OSWMixedAPIDroplet'
 //
 // The build script settings to fetch plugins and put them on
 // classpath

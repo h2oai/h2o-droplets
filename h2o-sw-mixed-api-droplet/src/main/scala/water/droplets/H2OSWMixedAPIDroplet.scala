@@ -53,7 +53,7 @@ object H2OSWMixedAPIDroplet {
         StructField("text", StringType, nullable = false),
         StructField("weight", IntegerType, nullable = false),
         StructField("fold", IntegerType, nullable = false))))
-      .csv("data/smsData3.txt")
+      .csv("data/smsData.txt")
 
     val Array(trainingDF, testingDF) = dataDF.randomSplit(Array(0.9, 0.1))
 

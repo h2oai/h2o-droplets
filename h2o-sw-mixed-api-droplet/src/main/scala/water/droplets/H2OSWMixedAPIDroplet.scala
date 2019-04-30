@@ -89,7 +89,7 @@ object H2OSWMixedAPIDroplet {
     val grid = gs.get()
 
     // Get the best model from the grid
-    val model = grid.getModels.head
+    val model = grid.getModels.sortBy(_.auc())(Ordering[Double].reverse).head
 
     // Make prediction on the best model
     val h2oPrediction = model

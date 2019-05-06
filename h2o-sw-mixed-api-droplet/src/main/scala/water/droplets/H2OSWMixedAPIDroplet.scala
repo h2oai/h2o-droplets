@@ -26,7 +26,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import _root_.hex.grid.GridSearch
-
+import hex.ModelMetrics
 import scala.collection.JavaConverters._
 
 /**
@@ -88,13 +88,22 @@ object H2OSWMixedAPIDroplet {
     val gs = GridSearch.startGridSearch(null, params, hyperParams)
     val grid = gs.get()
 
-    // Get the best model from the grid
+    // Get the best model from the grid based on AUC metric
     val model = grid.getModels.sortBy(_.auc())(Ordering[Double].reverse).head
+
+    // Print AUC metric for the model based on training datasets (k-fold cross validation)
+    println(s"Training AUC: ${model._output._training_metrics.auc_obj()._auc}")
+
+    // Print AUC metric for the model based on validation datasets (k-fold cross validation)
+    println(s"Validation AUC: ${model.auc()}")
 
     // Make prediction on the best model
     val h2oPrediction = model
-      .score(testingH2OFrame)
-      .add(testingH2OFrame)
+        .score(testingH2OFrame)
+        .add(testingH2OFrame)
+
+    // Print AUC metric for the model based on the testing dataset
+    println(s"Testing AUC: ${ModelMetrics.getFromDKV(model, testingH2OFrame).auc_obj()._auc}")
 
     // Convert testing frame with predictions back to Spark and show results
     val predictionDF = hc.asDataFrame(h2oPrediction)

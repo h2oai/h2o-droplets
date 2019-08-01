@@ -27,6 +27,8 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import _root_.hex.grid.GridSearch
 import hex.ModelMetrics
+import hex.genmodel.algos.gbm.GbmMojoModel
+
 import scala.collection.JavaConverters._
 
 /**
@@ -90,6 +92,12 @@ object H2OSWMixedAPIDroplet {
 
     // Get the best model from the grid based on AUC metric
     val model = grid.getModels.sortBy(_.auc())(Ordering[Double].reverse).head
+
+    // Get the corresponding GBM MOJO model
+    val mojoModel = model.toMojo.asInstanceOf[GbmMojoModel]
+
+    // Print values of hyper-parameters for a selected model (e.g. 'ntrees')
+    println(s"NTreeGroups: ${mojoModel.getNTreeGroups}")
 
     // Print AUC metric for the model based on training datasets (k-fold cross validation)
     println(s"Training AUC: ${model._output._training_metrics.auc_obj()._auc}")

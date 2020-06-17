@@ -11,7 +11,7 @@
     <properties>
         <spark.version>2.4.0</spark.version>
         <sparkling.version>2.4.7</sparkling.version>
-        <scala.version>2.11.12</scala.version>
+        <scala.version>2.13.2</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
     </properties>
 
@@ -170,10 +170,8 @@
                         </goals>
                         <configuration>
                             <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>reference.conf</resource>
                                 </transformer>
                             </transformers>

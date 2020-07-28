@@ -6,9 +6,6 @@
 
 // Apply the java plugin to add support for Java
 apply plugin: 'scala'
-// Support idea and Eclipse IDEs
-apply plugin: 'idea'
-apply plugin: 'eclipse'
 
 // Support local launch of application 
 apply plugin: 'application'
@@ -23,7 +20,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:5.0.0'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:6.0.0'
         classpath 'org.github.ngbinh.scalastyle:gradle-scalastyle-plugin_2.11:1.0.1'
     }
 }
@@ -33,14 +30,13 @@ buildscript {
 //
 ext {
     // Spark version
-    sparkMajorVersion = '2.4'
-    sparkVersion = "${sparkMajorVersion}.0"
+    sparkVersion = "3.0.0"
     // Latest stable version for the specified version of Spark
-    spWaterVersion = "${sparkMajorVersion}.7"
+    spWaterVersion = "3.30.0.7-1-3.0"
 
     // Scala binary version
-    scalaBaseVersion = '2.11'
-    scalaVersion = '2.11.12'
+    scalaBaseVersion = '2.12'
+    scalaVersion = '2.12.10'
 }
 
 java {
@@ -89,23 +85,14 @@ dependencies {
     // Spark Streaming
     compile "org.apache.spark:spark-streaming_${scalaBaseVersion}:${sparkVersion}"
 
-
-    // Sparkling Water Core
-    compile("ai.h2o:sparkling-water-core_${scalaBaseVersion}:${spWaterVersion}") {
-        exclude group: "javax.servlet", module: "servlet-api"
-    }
-    // Sparkling Water Examples (optional)
-    compile("ai.h2o:sparkling-water-examples_${scalaBaseVersion}:${spWaterVersion}")
-    // Sparkling Water REPL (optional)
-    compile("ai.h2o:sparkling-water-repl_${scalaBaseVersion}:${spWaterVersion}")
-    // Sparkling Water ML package (optional)
-    compile("ai.h2o:sparkling-water-ml_${scalaBaseVersion}:${spWaterVersion}")
+    // Sparkling Water
+    compile "ai.h2o:sparkling-water-package_${scalaBaseVersion}:${spWaterVersion}"
 
     // Scala project needs dependency on Scala library
     compile "org.scala-lang:scala-library:$scalaVersion"
 
     // And use scalatest for Scala testing
-    testCompile "org.scalatest:scalatest_${scalaBaseVersion}:2.2.1"
+    testCompile "org.scalatest:scalatest_${scalaBaseVersion}:3.2.0"
 }
 
 //
@@ -134,7 +121,7 @@ tasks.withType(ScalaCompile) {
 
 // In resulting jar include Scala binary version
 jar {
-    baseName = "${project.name}_${scalaBaseVersion}"
+    archivesBaseName = "${project.name}_${scalaBaseVersion}"
 }
 
 // Check Scala coding conventions
@@ -150,8 +137,8 @@ apply plugin: 'com.github.johnrengelman.shadow'
 shadowJar {
 
     // Configure name of output jar as sparkling-water-droplet-app.jar
-    appendix = 'app'
-    archiveName = "${baseName}-${appendix}.${extension}"
+    archiveAppendix = 'app'
+    archiveName = "${archiveBaseName}-${archiveAppendix}.${archiveExtension}"
 
     mergeServiceFiles()
     relocate 'javassist', 'ai.h2o.javassist'
@@ -219,7 +206,7 @@ shadowJar {
 
         include(dependency("org.eclipse.jetty:.*"))
 
-        baseName = "${baseName}_${scalaBaseVersion}"
+        archiveBaseName = "${archivesBaseName}_${scalaBaseVersion}"
     }
 }
 

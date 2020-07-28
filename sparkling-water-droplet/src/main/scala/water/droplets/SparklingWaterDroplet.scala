@@ -17,80 +17,63 @@
 
 package water.droplets
 
-import java.io.File
-
-import hex.tree.gbm.GBM
-import hex.tree.gbm.GBMModel.GBMParameters
-import org.apache.spark.h2o.{StringHolder, H2OContext}
-import org.apache.spark.{SparkFiles, SparkConf}
+import ai.h2o.sparkling.ml.algos.H2OGBM
+import org.apache.spark.SparkConf
+import org.apache.spark.h2o._
 import org.apache.spark.sql.SparkSession
-import water.fvec.H2OFrame
-
+import org.apache.spark.sql.functions._
 
 /**
-  * Example of Sparkling Water based application.
-  */
+ * Example of Sparkling Water based application.
+ */
 object SparklingWaterDroplet {
 
   def main(args: Array[String]) {
-
-    // Create Spark Context
-    val conf = configure("Sparkling Water Droplet")
-    val spark = SparkSession.builder.config(conf).getOrCreate()
+    // Create Spark Session
+    val conf = new SparkConf()
+      .setAppName("Sparkling Water Droplet")
+      .setMaster("local")
+    val spark = SparkSession
+      .builder
+      .config(conf)
+      .getOrCreate()
 
     // Create H2O Context
-    val h2oContext = H2OContext.getOrCreate(spark)
-    import h2oContext.implicits._
+    val h2oContext = H2OContext.getOrCreate()
 
-    // Register file to be available on all nodes
-    spark.sparkContext.addFile(new File("data/iris.csv").getAbsolutePath)
-
-    // Load data and parse it via h2o parser
-    val irisTable = new H2OFrame(new File(SparkFiles.get("iris.csv")))
+    val irisTable = spark.read.option("header", "true").option("inferSchema", "true").csv("data/iris.csv")
 
     // Build GBM model
-    val gbmParams = new GBMParameters()
-    gbmParams._train = irisTable
-    gbmParams._response_column = "class"
-    gbmParams._ntrees = 5
-
-    val gbm = new GBM(gbmParams)
-    val gbmModel = gbm.trainModel.get
+    val model = new H2OGBM()
+      .setLabelCol("class")
+      .setNtrees(5)
+      .fit(irisTable)
 
     // Make prediction on train data
-    val predict = gbmModel.score(irisTable).subframe(Array("predict"))
+    val predictions = model.transform(irisTable)
 
-    // Compute number of mispredictions with help of Spark API
-    val trainRDD = h2oContext.asRDD[StringHolder](irisTable.subframe(Array("class")))
-    val predictRDD = h2oContext.asRDD[StringHolder](predict)
+    // Compute number of miss-predictions with help of Spark API
 
-    // Make sure that both RDDs has the same number of elements
-    assert(trainRDD.count() == predictRDD.count)
-    val numMispredictions = trainRDD.zip(predictRDD).filter(i => {
-      val act = i._1
-      val pred = i._2
-      act.result != pred.result
-    }).collect()
+    // Make sure that both DataFrames has the same number of elements
+    assert(irisTable.count() == predictions.count)
+    val irisTableWithId = irisTable.select("class").withColumn("id", monotonically_increasing_id())
+    val predictionsWithId = predictions.select("prediction").withColumn("id", monotonically_increasing_id())
+    val df = irisTableWithId.join(predictionsWithId, "id").drop("id")
+    val missPredictions = df.filter(df("class")=!=df("prediction"))
+    val numMissPredictions = missPredictions.count()
 
     println(
       s"""
-         |Number of mispredictions: ${numMispredictions.length}
+         |Number of miss-predictions: $numMissPredictions
          |
-         |Mispredictions:
+         |Miss-predictions:
          |
          |actual X predicted
          |------------------
-         |${numMispredictions.map(i => i._1.result.get + " X " + i._2.result.get).mkString("\n")}
+         |${missPredictions.collect().mkString("\n")}
        """.stripMargin)
 
     // Shutdown application
     h2oContext.stop(true)
-  }
-
-  def configure(appName: String = "Sparkling Water Demo"): SparkConf = {
-    new SparkConf()
-      .setAppName(appName)
-      .setIfMissing("spark.master", sys.env.getOrElse("spark.master", "local"))
-      .set("spark.sql.autoBroadcastJoinThreshold", "-1")
   }
 }

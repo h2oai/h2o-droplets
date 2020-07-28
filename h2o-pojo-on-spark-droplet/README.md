@@ -2,11 +2,11 @@
 
 This is a simple example project to start with H<sub>2</sub>O Pojo. 
 
-Recommendation: If you plan to use H2O POJO/MOJO in Spark environment, we sugget to have a look at Sparkling Water
+Recommendation: If you plan to use H2O POJO/MOJO in Spark environment, we suggest to have a look at Sparkling Water
 project.
 
 ## Dependencies
-  - Spark 2.4
+  - Spark 3.0
 
 For more details see [build.gradle](build.gradle).
 
@@ -71,4 +71,3 @@ Submit application to a local Spark cluster:
 export MASTER='local[*]'
 $SPARK_HOME/bin/spark-submit --class examples.PojoExample build/libs/cap1-assembler-all.jar
 ```
-

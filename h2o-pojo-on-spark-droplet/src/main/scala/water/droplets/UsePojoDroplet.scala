@@ -2,31 +2,22 @@ package water.droplets
 
 import hex.genmodel.GenModel
 import hex.genmodel.easy.{EasyPredictModelWrapper, RowData}
-import org.apache.spark.sql.Row
+import org.apache.spark.SparkConf
 import org.apache.spark.internal.Logging
-import org.apache.spark.{SparkConf, SparkContext, SparkFiles}
+import org.apache.spark.sql.SparkSession
 
 /**
-  * Simple example showing how to use pojo directly from Spark.
+  * Simple example showing how to use POJO directly from Spark.
   */
 object UsePojoDroplet extends Logging {
 
   def main(args: Array[String]): Unit = {
-    logInfo("Starting SparkContext, SQLContext, ....")
-    // Create Spark Context
-    val conf = configure("Sparkling Water Droplet")
-    val sc = new SparkContext(conf)
+    logInfo("Starting Spark Session")
+    val conf = new SparkConf().setAppName("Sparkling Water Droplet").setMaster("local")
+    val spark = SparkSession.builder().config(conf).getOrCreate()
 
-    // Register file for reading around cluster.
-    // The data file is simple iris file without any header
-    sc.addFile("data/iris.csv")
-
-    logInfo(s"Loading data from ${SparkFiles.get("iris.csv")} into DataFrame")
-    val testDataRdd = sc.textFile(SparkFiles.get("iris.csv"))
-      .map(_.trim)
-      .filter(!_.isEmpty)
-      .map(_.split(","))
-      .map(p => Row(f(p(0)), f(p(1)), f(p(2)), f(p(3))))
+    logInfo(s"Loading data from data/iris.csv into DataFrame")
+    val testData = spark.read.option("header", "true").option("inferSchema", "true").csv("data/iris.csv")
 
     logInfo("Loading POJO by its class name: 'gbm_aa57ff38_927d_40ba_973b_4b0f5e281d03'")
     // We use classloading here instead of referencing pojo directly.
@@ -45,7 +36,7 @@ object UsePojoDroplet extends Logging {
     logInfo("  - pojo input columns: " + header.mkString(","))
     logInfo("  - pojo prediction categories: " + easyModel.getResponseDomainValues.mkString(","))
 
-    val predictionRdd = testDataRdd.map(row => {
+    val predictionRdd = testData.rdd.map(row => {
       val r = new RowData
       // This is simple use that header of POJO is matching
       header.indices.foreach(idx => r.put(header(idx), row.getDouble(idx).asInstanceOf[AnyRef]))
@@ -58,26 +49,6 @@ object UsePojoDroplet extends Logging {
       logInfo(s"Prediction: ${prediction.label}: ${prediction.classProbabilities.mkString(",")}")
     }
 
-    sc.stop()
+    spark.stop()
   }
-
-  /** Convert string to double.
-    *
-    * It replaces all non-parsable strings with Double.NaN  */
-  def f(s: String): Double = {
-    try {
-      s.trim.toDouble
-    } catch {
-      case _: Throwable => Double.NaN
-    }
-  }
-
-  /** Creates default Spark config */
-  def configure(appName: String = "POJO in Spark example"): SparkConf = {
-    val conf = new SparkConf()
-      .setAppName(appName)
-    conf.setIfMissing("spark.master", sys.env.getOrElse("spark.master", "local"))
-    conf
-  }
-
 }

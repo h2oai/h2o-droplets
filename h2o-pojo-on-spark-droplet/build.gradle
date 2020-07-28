@@ -5,23 +5,21 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:5.0.0'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:6.0.0'
     }
 }
 
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'scala'
-apply plugin: 'idea'
-apply plugin: 'eclipse'
 apply plugin: 'com.github.johnrengelman.shadow'
 // Support local launch of application
 apply plugin: 'application'
 mainClassName = 'water.droplets.UsePojoDroplet'
 
 ext {
-  scalaBinaryVersion = "2.11"
-  scalaVersion = "2.11.12"
-  sparkVersion = "2.4.0"
+  scalaBaseVersion = "2.12"
+  scalaVersion = "2.12.10"
+  sparkVersion = "3.0.0"
 }
 
 repositories {
@@ -29,18 +27,16 @@ repositories {
 }
 
 dependencies {
-    compile "ai.h2o:h2o-genmodel:3.22.1.6"
+    api "ai.h2o:h2o-genmodel:3.30.0.7"
     // Spark dependencies
     // - core
-    compile "org.apache.spark:spark-core_${scalaBinaryVersion}:${sparkVersion}"
+    api "org.apache.spark:spark-core_${scalaBaseVersion}:${sparkVersion}"
     // - SQL component
-    compile "org.apache.spark:spark-sql_${scalaBinaryVersion}:${sparkVersion}"
-
+    api "org.apache.spark:spark-sql_${scalaBaseVersion}:${sparkVersion}"
     // Add joda optional convert library which is required in Scala environment
-    compile "org.joda:joda-convert:1.7"
-
+    api "org.joda:joda-convert:1.7"
     // And Scala library
-    compile "org.scala-lang:scala-library:${scalaVersion}"
+    api "org.scala-lang:scala-library:${scalaVersion}"
 }
 
 // Setup resources
@@ -52,9 +48,21 @@ sourceSets {
     }
 }
 
-shadowJar {
-    mergeServiceFiles()
-    dependencies {
-      include(dependency("ai.h2o:h2o-genmodel"))
+configurations {
+    shadowApi {
+        extendsFrom api
     }
+}
+
+shadowJar {
+    // Configure name of output jar as sparkling-water-droplet-app.jar
+    archiveAppendix = 'app'
+    configurations = [project.configurations.shadowApi]
+    mergeServiceFiles()
+    archiveBaseName = "${archiveBaseName}_${scalaBaseVersion}"
+    zip64 = true
+}
+
+artifacts {
+    api shadowJar
 }

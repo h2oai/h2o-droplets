@@ -45,7 +45,6 @@ public class H2OJavaDroplet {
 
     public String hello(String name) {
       return String.format(msg, name);
-
     }
   }
 
@@ -58,13 +57,11 @@ public class H2OJavaDroplet {
     Key vkey = Key.make("hello.key");
     StringHolder value = new StringHolder(MSG);
     DKV.put(vkey, value);
-
     return vkey;
   }
 
   /** Application Entry Point */
   public static void main(String[] args) {
-
     // Run H2O and build a cloud of 1 member
     H2OApp.main(args);
 
@@ -81,8 +78,6 @@ public class H2OJavaDroplet {
       } catch (IOException e) {
         e.printStackTrace();
       }
-
     }
   }
 }
-

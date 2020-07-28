@@ -5,11 +5,7 @@
  */
 
 // Apply the java plugin to add support for Java
-apply plugin: 'java'
-// Support idea and Eclipse IDEs
-apply plugin: 'idea'
-apply plugin: 'eclipse'
-
+apply plugin: 'java-library'
 // Support local launch of application
 apply plugin: 'application'
 mainClassName = 'water.droplets.H2OJavaDroplet'
@@ -18,9 +14,9 @@ mainClassName = 'water.droplets.H2OJavaDroplet'
 //
 ext { 
   // Configure h2o-dev dependency information
-  h2oBranch = 'rel-xu'
-  h2oBuildNumber = '6'
-  h2oProjectVersion = "3.22.1.${h2oBuildNumber}"
+  h2oBranch = 'rel-zahradnik'
+  h2oBuildNumber = '7'
+  h2oProjectVersion = "3.30.0.${h2oBuildNumber}"
 }
 
 // In this section you declare where to find the dependencies of your project
@@ -36,7 +32,7 @@ repositories {
 
     // Hortonworks dependencies
     maven {
-      url "http://repo.hortonworks.com/content/repositories/releases/"
+      url "https://repo.hortonworks.com/content/repositories/releases/"
     }
 
     // Include build h2o-dev dependencies if branch if pulling from master
@@ -54,16 +50,16 @@ repositories {
 // In this section you declare the dependencies for your production and test code
 dependencies {
     // Define dependency on core of H2O
-    compile "ai.h2o:h2o-core:${h2oProjectVersion}"
+    api "ai.h2o:h2o-core:${h2oProjectVersion}"
     // Define dependency on H2O algorithm 
-    compile "ai.h2o:h2o-algos:${h2oProjectVersion}"
+    api "ai.h2o:h2o-algos:${h2oProjectVersion}"
     // Demands web support 
-    compile "ai.h2o:h2o-web:${h2oProjectVersion}"
+    api "ai.h2o:h2o-web:${h2oProjectVersion}"
     // Contains H2O entry points
-    compile "ai.h2o:h2o-app:${h2oProjectVersion}"
+    api "ai.h2o:h2o-app:${h2oProjectVersion}"
 
     // H2O uses jUnit for testing 
-    testCompile 'junit:junit:4.11'
+    testImplementation 'junit:junit:4.11'
 }
 
 //
@@ -76,8 +72,8 @@ group = "ai.h2o"
 //
 // Setup Java plugin
 //
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 compileJava { 
     options.debug = true 
 }

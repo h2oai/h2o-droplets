@@ -5,10 +5,8 @@
  */
 
 // Apply the java plugin to add support for Java
+apply plugin: 'java-library'
 apply plugin: 'scala'
-// Support idea and Eclipse IDEs
-apply plugin: 'idea'
-apply plugin: 'eclipse'
 
 // Support local launch of application 
 apply plugin: 'application'
@@ -23,7 +21,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:5.0.0'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:6.0.0'
         classpath 'org.github.ngbinh.scalastyle:gradle-scalastyle-plugin_2.11:1.0.1'
     }
 }
@@ -33,14 +31,13 @@ buildscript {
 //
 ext {
     // Spark version
-    sparkMajorVersion = '2.4'
-    sparkVersion = "${sparkMajorVersion}.0"
+    sparkVersion = "3.0.0"
     // Latest stable version for the specified version of Spark
-    spWaterVersion = "${sparkMajorVersion}.9"
+    spWaterVersion = "3.30.0.7-1-3.0"
 
     // Scala binary version
-    scalaBaseVersion = '2.11'
-    scalaVersion = '2.11.12'
+    scalaBaseVersion = '2.12'
+    scalaVersion = '2.12.10'
 }
 
 java {
@@ -78,34 +75,24 @@ repositories {
 // This section declares the dependencies for your production and test code
 dependencies {
     // Spark Core
-    compile "org.apache.spark:spark-core_${scalaBaseVersion}:${sparkVersion}"
-    // Spark Core
-    compile "org.apache.spark:spark-repl_${scalaBaseVersion}:${sparkVersion}"
+    api("org.apache.spark:spark-core_${scalaBaseVersion}:${sparkVersion}")
+    // Spark REPL
+    api("org.apache.spark:spark-repl_${scalaBaseVersion}:${sparkVersion}")
     // Spark SQL
-    compile "org.apache.spark:spark-sql_${scalaBaseVersion}:${sparkVersion}"
+    api("org.apache.spark:spark-sql_${scalaBaseVersion}:${sparkVersion}")
     // Spark MLLib
-    compile "org.apache.spark:spark-mllib_${scalaBaseVersion}:${sparkVersion}"
-
+    api("org.apache.spark:spark-mllib_${scalaBaseVersion}:${sparkVersion}")
     // Spark Streaming
-    compile "org.apache.spark:spark-streaming_${scalaBaseVersion}:${sparkVersion}"
+    api("org.apache.spark:spark-streaming_${scalaBaseVersion}:${sparkVersion}")
 
-
-    // Sparkling Water Core
-    compile("ai.h2o:sparkling-water-core_${scalaBaseVersion}:${spWaterVersion}") {
-        exclude group: "javax.servlet", module: "servlet-api"
-    }
-    // Sparkling Water Examples (optional)
-    compile("ai.h2o:sparkling-water-examples_${scalaBaseVersion}:${spWaterVersion}")
-    // Sparkling Water REPL (optional)
-    compile("ai.h2o:sparkling-water-repl_${scalaBaseVersion}:${spWaterVersion}")
-    // Sparkling Water ML package (optional)
-    compile("ai.h2o:sparkling-water-ml_${scalaBaseVersion}:${spWaterVersion}")
+    // Sparkling Water
+    api("ai.h2o:sparkling-water-package_${scalaBaseVersion}:${spWaterVersion}")
 
     // Scala project needs dependency on Scala library
-    compile "org.scala-lang:scala-library:$scalaVersion"
+    api("org.scala-lang:scala-library:$scalaVersion")
 
     // And use scalatest for Scala testing
-    testCompile "org.scalatest:scalatest_${scalaBaseVersion}:2.2.1"
+    testImplementation "org.scalatest:scalatest_${scalaBaseVersion}:3.2.0"
 }
 
 //
@@ -134,7 +121,7 @@ tasks.withType(ScalaCompile) {
 
 // In resulting jar include Scala binary version
 jar {
-    baseName = "${project.name}_${scalaBaseVersion}"
+    archiveBaseName = "${project.name}_${scalaBaseVersion}"
 }
 
 // Check Scala coding conventions
@@ -147,82 +134,21 @@ apply from: 'gradle/scalastyle.gradle'
 // Support for application assembly
 apply plugin: 'com.github.johnrengelman.shadow'
 
-shadowJar {
-
-    // Configure name of output jar as sparkling-water-droplet-app.jar
-    appendix = 'app'
-    archiveName = "${baseName}-${appendix}.${extension}"
-
-    mergeServiceFiles()
-    relocate 'javassist', 'ai.h2o.javassist'
-    // Relocate Eclipse Jetty to avoid collisions with Spark Jetty (newer version)
-    relocate 'org.eclipse.jetty', 'ai.h2o.org.eclipse.jetty'
-    relocate 'com.google.common', 'ai.h2o.com.google.common'
-    dependencies {
-        // This has to be specific list of dependencies
-        // Do not forget that Sparkling Water App is intended
-        // to run inside Spark environment providing some jars
-        // (like hadoop, aws) on classpath
-        //
-        include(dependency("ai.h2o:sparkling-water-core_${scalaBaseVersion}"))
-        include(dependency("ai.h2o:sparkling-water-examples_${scalaBaseVersion}"))
-        include(dependency("ai.h2o:sparkling-water-repl_${scalaBaseVersion}"))
-        include(dependency("ai.h2o:sparkling-water-ml_${scalaBaseVersion}"))
-
-        include(dependency("ai.h2o:h2o-genmodel"))
-        include(dependency("ai.h2o:h2o-core"))
-        include(dependency("ai.h2o:h2o-scala_${scalaBaseVersion}"))
-        include(dependency("ai.h2o:h2o-web"))
-        include(dependency("ai.h2o:h2o-algos"))
-        include(dependency("ai.h2o:h2o-automl"))
-        include(dependency("ai.h2o:h2o-persist-hdfs"))
-        include(dependency("ai.h2o:h2o-persist-s3"))
-        include(dependency("ai.h2o:h2o-persist-gcs"))
-
-
-        include(dependency("com.google.cloud:.*"))
-        include(dependency("com.google.auth:.*"))
-        include(dependency("com.google.api:.*"))
-        include(dependency("com.google.api-client:.*"))
-        include(dependency("com.google.http-client:.*"))
-        include(dependency("com.google.oauth-client:.*"))
-        include(dependency("com.google.api:.*"))
-        include(dependency("com.google.apis:.*"))
-        include(dependency("org.threeten:threetenbp"))
-        include(dependency("io.opencensus:.*"))
-        include(dependency("io.grpc:grpc-context"))
-
-        include(dependency("com.google.guava:guava"))
-        include(dependency("com.google.guava:guava-concurrent"))
-
-
-        include(dependency("ai.h2o:h2o-avro-parser"))
-        include(dependency("ai.h2o:h2o-orc-parser"))
-        include(dependency("ai.h2o:h2o-parquet-parser"))
-        include(dependency("ai.h2o:reflections"))
-        include(dependency("ai.h2o:google-analytics-java"))
-        include(dependency("ai.h2o:deepwater-backend-api"))
-        include(dependency("ai.h2o:h2o-ext-xgboost"))
-        include(dependency("ai.h2o:h2o-genmodel-ext-xgboost"))
-        include(dependency("ai.h2o:h2o-jetty-8"))
-        include(dependency("ai.h2o:h2o-webserver-iface"))
-        include(dependency("joda-time:joda-time"))
-        include(dependency("org.joda:joda-convert"))
-        include(dependency("org.javassist:javassist"))
-        include(dependency("gov.nist.math:jama"))
-        include(dependency("com.google.code.gson:gson"))
-        include(dependency("com.github.tony19:named-regexp"))
-        include(dependency("com.amazonaws:aws-java-sdk-s3"))
-        include(dependency("com.amazonaws:aws-java-sdk-kms"))
-        include(dependency("com.amazonaws:aws-java-sdk-core"))
-        include(dependency("no.priv.garshol.duke:duke"))
-
-        include(dependency("org.eclipse.jetty:.*"))
-
-        baseName = "${baseName}_${scalaBaseVersion}"
+configurations {
+    shadowApi {
+        extendsFrom api
     }
 }
 
+shadowJar {
+    // Configure name of output jar as sparkling-water-droplet-app.jar
+    archiveAppendix = 'app'
+    configurations = [project.configurations.shadowApi]
+    mergeServiceFiles()
+    archiveBaseName = "${archiveBaseName}_${scalaBaseVersion}"
+    zip64 = true
+}
+
 artifacts {
-    compile shadowJar
+    api shadowJar
 }

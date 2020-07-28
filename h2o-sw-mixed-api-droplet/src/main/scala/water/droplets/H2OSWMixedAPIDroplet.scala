@@ -21,11 +21,11 @@ import hex.tree.gbm.GBMModel
 import org.apache.spark.h2o.H2OContext
 import org.apache.spark.ml.Pipeline
 import org.apache.spark.ml.feature.{HashingTF, IDF, RegexTokenizer, StopWordsRemover}
-import org.apache.spark.ml.h2o.features.ColumnPruner
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import _root_.hex.grid.GridSearch
+import ai.h2o.sparkling.ml.features.ColumnPruner
 import hex.ModelMetrics
 import hex.genmodel.algos.gbm.GbmMojoModel
 
@@ -38,14 +38,13 @@ object H2OSWMixedAPIDroplet {
 
   def main(args: Array[String]) {
 
-    // Create Spark Context
-    val conf = configure("H2O-SW mixed API Droplet")
+    // Create Spark Session
+    val conf = new SparkConf().setAppName("H2O-SW mixed API Droplet").setMaster("local")
     val spark = SparkSession.builder.config(conf).getOrCreate()
     import spark.implicits._
 
     // Create H2O Context
-    val hc = H2OContext.getOrCreate(spark)
-    import hc.implicits._
+    val hc = H2OContext.getOrCreate()
 
     // Load data from file
     val dataDF = spark.read
@@ -60,14 +59,13 @@ object H2OSWMixedAPIDroplet {
     val Array(trainingDF, testingDF) = dataDF.randomSplit(Array(0.9, 0.1))
 
     // Perform pre-processing and feature engineering with Apache Spark
-    val preProcessingPipeline = sparkPreprocessingPipeline(spark).fit(trainingDF)
+    val preProcessingPipeline = sparkPreprocessingPipeline().fit(trainingDF)
 
     val preProcessedTrainingDF = preProcessingPipeline.transform(trainingDF)
     val trainingH2OFrame = hc.asH2OFrame(preProcessedTrainingDF)
 
     val preProcessedTestingDF = preProcessingPipeline.transform(testingDF)
     val testingH2OFrame = hc.asH2OFrame(preProcessedTestingDF)
-
 
     // Setup hyper-parameter search space
     val hyperParams = Map[String, Array[AnyRef]](
@@ -114,7 +112,7 @@ object H2OSWMixedAPIDroplet {
     println(s"Testing AUC: ${ModelMetrics.getFromDKV(model, testingH2OFrame).auc_obj()._auc}")
 
     // Convert testing frame with predictions back to Spark and show results
-    val predictionDF = hc.asDataFrame(h2oPrediction)
+    val predictionDF = hc.asSparkFrame(h2oPrediction)
     predictionDF
       .select($"text", $"label", $"predict" as "prediction", $"ham", $"spam")
       .show()
@@ -123,7 +121,7 @@ object H2OSWMixedAPIDroplet {
     hc.stop(true)
   }
 
-  def sparkPreprocessingPipeline(spark: SparkSession): Pipeline = {
+  def sparkPreprocessingPipeline(): Pipeline = {
 
     // Tokenize messages and split sentences into words.
     val tokenizer = new RegexTokenizer()
@@ -159,13 +157,5 @@ object H2OSWMixedAPIDroplet {
     // Assemble stages
     new Pipeline()
       .setStages(Array(tokenizer, stopWordsRemover, hashingTF, idf, colPruner))
-  }
-
-
-  def configure(appName: String): SparkConf = {
-    new SparkConf()
-      .setAppName(appName)
-      .setIfMissing("spark.master", sys.env.getOrElse("spark.master", "local"))
-      .set("spark.sql.autoBroadcastJoinThreshold", "-1")
   }
 }

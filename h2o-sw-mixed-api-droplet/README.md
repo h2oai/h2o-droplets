@@ -3,9 +3,9 @@
 This is a simple Scala project that demonstrates how to combine Sparkling Water API with H20-3 internal Java API.
 
 ## Dependencies
-This droplet uses Sparkling Water 2.4.9 which integrates:
-  - Spark 2.4
-  - H2O 3.24.0.1
+This droplet uses Sparkling Water 3.30.0.7-1-3.0 which integrates:
+  - Spark 3.0
+  - H2O 3.30.0.7
 
 For more details see [build.gradle](build.gradle).
 

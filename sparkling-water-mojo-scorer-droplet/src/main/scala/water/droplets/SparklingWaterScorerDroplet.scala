@@ -17,8 +17,8 @@
 
 package water.droplets
 
+import ai.h2o.sparkling.ml.models.H2OMOJOModel
 import org.apache.spark.SparkConf
-import org.apache.spark.ml.h2o.models.H2OMOJOModel
 import org.apache.spark.sql.SparkSession
 
 
@@ -45,9 +45,11 @@ object SparklingWaterScorerDroplet {
         |  mojo file :  ${mojoFile}
       """.stripMargin)
 
-    // Create Spark Context
-    banner("Staring Spark Session")
-    val conf = configure("Sparkling Water Scorer Droplet").set("spark.ext.h2o.repl.enabled", "false")
+    // Create Spark Session
+    banner("Starting Spark Session")
+    val conf = new SparkConf()
+      .setAppName("Sparkling Water Scorer Droplet")
+      .setMaster("local")
     val spark = SparkSession.builder.config(conf).getOrCreate()
     spark.sparkContext.setLogLevel("WARN")
     
@@ -58,7 +60,7 @@ object SparklingWaterScorerDroplet {
     prostateDf.printSchema()
 
     // Load H2O MOJO
-    banner(s"Loading MOJO from '${inputFile}'")
+    banner(s"Loading MOJO from '$inputFile'")
     val mojo = H2OMOJOModel.createFromMojo(mojoFile)
 
     // Make prediction
@@ -71,21 +73,14 @@ object SparklingWaterScorerDroplet {
     banner("Actual content of prediction data frame")
     import org.apache.spark.sql.functions.{col, udf}
     val prettyFunc = (pred: Double) => {
-      f"${pred}%.4f"
+      f"$pred%.4f"
     }
     val prettyUdf = udf(prettyFunc)
-    prediction.withColumn("prediction_output", prettyUdf(col("prediction_output.value"))).show()
+    prediction.withColumn("prediction", prettyUdf(col("prediction"))).show()
 
     // Shutdown application
     spark.stop()
   }
 
-  def configure(appName:String = "Sparkling Water Demo"):SparkConf = {
-    val conf = new SparkConf()
-      .setAppName(appName)
-    conf.setIfMissing("spark.master", sys.env.getOrElse("spark.master", "local"))
-    conf
-  }
-
-  def banner(msg:String) = println(s"\n*** ${msg} ****")
+  def banner(msg:String): Unit = println(s"\n*** $msg ****")
 }

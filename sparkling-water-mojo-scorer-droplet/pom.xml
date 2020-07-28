@@ -9,10 +9,10 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <spark.version>2.4.0</spark.version>
-        <sparkling.version>2.4.7</sparkling.version>
-        <scala.version>2.11.12</scala.version>
-        <scala.binary.version>2.11</scala.binary.version>
+        <spark.version>3.0.0</spark.version>
+        <sparkling.version>3.30.0.7-1-3.0</sparkling.version>
+        <scala.version>2.12.10</scala.version>
+        <scala.binary.version>2.12</scala.binary.version>
     </properties>
 
     <dependencies>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_${scala.binary.version}</artifactId>
-            <version>2.2.1</version>
+            <version>3.2.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -54,12 +54,7 @@
         <!-- Sparkling Water deps -->
         <dependency>
             <groupId>ai.h2o</groupId>
-            <artifactId>sparkling-water-core_${scala.binary.version}</artifactId>
-            <version>${sparkling.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ai.h2o</groupId>
-            <artifactId>sparkling-water-ml_${scala.binary.version}</artifactId>
+            <artifactId>sparkling-water-package_${scala.binary.version}</artifactId>
             <version>${sparkling.version}</version>
         </dependency>
     </dependencies>
@@ -132,7 +127,7 @@
                         <configuration>
                             <tagsToExclude>Integration-Test</tagsToExclude>
                             <argLine>
-                                -Xmx1536m -XX:MaxPermSize=512m -XX:ReservedCodeCacheSize=512m
+                                -Xmx1536m -XX:ReservedCodeCacheSize=512m
                             </argLine>
                             <parallel>false</parallel>
                         </configuration>

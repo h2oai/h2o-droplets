@@ -58,7 +58,7 @@ repositories {
 
     // Hortonworks dependencies
     maven {
-        url "http://repo.hortonworks.com/content/repositories/releases/"
+        url "https://repo.hortonworks.com/content/repositories/releases/"
     }
 
     // Public sonatype repository

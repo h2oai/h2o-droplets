@@ -34,7 +34,10 @@ jobs:
       - name: Snyk scan for Java dependencies
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          snyk test --all-sub-projects -d --fail-on=all --package-manager=gradle
+          for file in $(find . -name "build.gradle"); do
+            file=${file:2}
+            snyk test file=$file -d --fail-on=all --package-manager=gradle
+          done
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 

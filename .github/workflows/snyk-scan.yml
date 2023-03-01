@@ -22,16 +22,21 @@ jobs:
         id: changed-files
         with:
           files: |
-            **/build.gradle
-            **/gradle.properties
+            h2o-java-droplet/build.gradle
+            h2o-java-droplet/gradle.properties
 
+      - uses: snyk/actions/setup@master
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+      
       - name: Snyk scan for Java dependencies
         if: steps.changed-files.outputs.any_changed == 'true'
-        uses: snyk/actions/gradle@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --all-sub-projects -d --fail-on=all
+        run: |
+          snyk test --file=h2o-java-droplet/build.gradle -d --fail-on=all --package-manager=gradle
 
   snyk_scan_monitor:
     if: ${{ github.event_name == 'push' }}

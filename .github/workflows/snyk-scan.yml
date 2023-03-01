@@ -25,18 +25,13 @@ jobs:
             **/build.gradle
             **/gradle.properties
 
-      - uses: snyk/actions/setup@master
-      - uses: actions/setup-java@v3
-        with:
-          java-version: '8'
-          distribution: 'adopt'
-
       - name: Snyk scan for Java dependencies
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: |
-          snyk test --all-sub-projects -d --fail-on=all --package-manager=gradle
+        uses: snyk/actions/gradle@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --all-sub-projects -d --fail-on=all
 
   snyk_scan_monitor:
     if: ${{ github.event_name == 'push' }}

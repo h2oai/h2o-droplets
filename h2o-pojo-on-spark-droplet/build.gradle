@@ -66,4 +66,3 @@ shadowJar {
 artifacts {
     api shadowJar
 }
-

@@ -77,4 +77,3 @@ targetCompatibility = 1.8
 compileJava { 
     options.debug = true 
 }
-
